@@ -31,7 +31,7 @@ class Router
      * 
      * @throws RuntimeException If path is already configured
      */
-    public function configurePath(string $method, string $path, string $controller)
+    public function configurePath(string $method, string $path, string $controller): void
     {
         if (isset($this->config[$path][$method])) {
             throw new RuntimeException("Path \"{$path}\" ({$method}) is already configured.");
