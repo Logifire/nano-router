@@ -50,20 +50,28 @@ class Router
      */
     public function run(ServerRequestInterface $request): ?ResponseInterface
     {
-        $response = null;
-        $path = $request->getUri()->getPath();
-        $method = $request->getMethod();
-
-        if (isset($this->config[$path][$method])) {
-            $controller_class = $this->config[$path][$method];
-
-            $response = $this->callController($controller_class, $request);
+        $controller_class = $this->resolvePath($request);
+        if ($controller_class) {
+            $response = $this->callController($controller_class);
         }
 
         return $response;
     }
 
-    private function callController(string $controller_class, ServerRequestInterface $request): ResponseInterface
+    private function resolvePath(ServerRequestInterface $request): ?string
+    {
+        $controller_class = null;
+        $path = $request->getUri()->getPath();
+        $method = $request->getMethod();
+
+        if (isset($this->config[$path][$method])) {
+            $controller_class = $this->config[$path][$method];
+        }
+
+        return $controller_class;
+    }
+
+    private function callController(string $controller_class, array $args = []): ResponseInterface
     {
         if (!$this->container->has($controller_class)) {
             throw new RuntimeException("\"{$controller_class}\" is not configured in the container");
@@ -71,7 +79,7 @@ class Router
 
         /* @var $controller Controller */
         $controller = $this->container->get($controller_class);
-        $response = $controller->run($request);
+        $response = $controller->run($args);
 
         return $response;
     }

@@ -22,9 +22,9 @@ class RouterTest extends TestCase
         $container = $container_factory->createContainer();
 
         $router = new Router($container);
-        $router->configurePath('get', '/', $name);
+        $router->configurePath('get', '/profiles/1234', $name);
 
-        $server_request = new ServerRequest('get', '/');
+        $server_request = new ServerRequest('get', '/profiles/1234');
 
         $response = $router->run($server_request);
         $this->assertSame(200, $response->getStatusCode());
@@ -32,4 +32,6 @@ class RouterTest extends TestCase
         $stream->rewind();
         $this->assertSame(MockController::RESPONSE_BODY, $stream->getContents());
     }
+    
+    
 }
