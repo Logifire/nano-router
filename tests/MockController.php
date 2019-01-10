@@ -12,6 +12,8 @@ class MockController implements Controller
 
     public function run(array $args = []): ResponseInterface
     {
-        return new Response(200, [], self::RESPONSE_BODY);
+        $requested_path = $args[0];
+        $body = self::RESPONSE_BODY . " {$requested_path}";
+        return new Response(200, [], $body);
     }
 }
