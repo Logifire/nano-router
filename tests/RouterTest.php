@@ -26,7 +26,7 @@ class RouterTest extends TestCase
         $router->configurePath('GET', '/profiles/(?<id>\d+)', $controller_class);
         $router->configurePath('GET', '/profiles', 'Invalid');
         $router->configurePath('GET', '/profiles/abc', 'Invalid');
-        $router->configurePath('GET', '/profiles/123/children', 'Invalid');
+        $router->configurePath('GET', '/profiles/(?<id>\d+)/children', 'Invalid');
 
         return $router;
     }
@@ -49,7 +49,7 @@ class RouterTest extends TestCase
         $this->assertContains($integer_id_path, $body, 'The correct controller is called');
     }
 
-    public function testSimlarPath()
+    public function testSimilarPath()
     {
         $router = $this->routerSetup();
 
