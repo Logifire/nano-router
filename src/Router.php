@@ -46,7 +46,7 @@ class Router
             throw new RouterException("Path \"{$path}\" ({$method}) is already configured.");
         }
 
-        if (@preg_match("#{$path}#", '') === false) {
+        if (@preg_match("~{$path}~", '') === false) {
             throw new RouterException("Invalid path: {$path}");
         }
 
@@ -65,7 +65,7 @@ class Router
         $method = $request->getMethod();
 
         foreach ($this->config as $pattern => $method_controller) {
-            if (@preg_match("#^{$pattern}$#iu", $path, $matches) === 1) {
+            if (@preg_match("~^{$pattern}$~iu", $path, $matches) === 1) {
                 if (isset($method_controller[$method])) {
                     $response = $this->callController($method_controller[$method], $matches);
                     break;
