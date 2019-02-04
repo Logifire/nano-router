@@ -21,10 +21,11 @@
     "require-dev": {
         "phpunit/phpunit": "7.5.1",
         "nyholm/psr7": "1.0.1",
-        "logifire/naive-container": "1.0.0"
+        "logifire/naive-container": "^1.1.0",
+        "logifire/naive-middleware": "^0.0.1"
     },
     "suggest": {
-        "logifire/naive-container": "A PSR-11 container implementation",
-        "logifire/naive-middleware": "A PSR-15 middleware implementation"
+        "logifire/naive-container": "A PSR-11 container implementation, required for the middleware implementation.",
+        "logifire/naive-middleware": "A PSR-15 middleware implementation."
     }
 }

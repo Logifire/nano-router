@@ -1,10 +1,7 @@
 <?php
 namespace NaiveRouter;
 
-use NaiveFramework\Controller;
 use NaiveRouter\Exception\RouterException;
-use Psr\Container\ContainerInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class Router
@@ -15,23 +12,12 @@ class Router
      */
     private $config;
 
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
-
     public const METHODS = [
         'GET',
         'POST',
         'PUT',
         'DELETE',
     ];
-
-    public function __construct(ContainerInterface $container)
-    {
-
-        $this->container = $container;
-    }
 
     /**
      * @throws RouterException If path is already configured, or unsupported method
@@ -53,39 +39,27 @@ class Router
         $this->config[$path] = [$method => $controller];
     }
 
-    public function run(ServerRequestInterface $request): ?ResponseInterface
+    public function run(ServerRequestInterface $request): ?RouterResult
     {
         return $this->resolvePath($request);
     }
 
-    private function resolvePath(ServerRequestInterface $request): ?ResponseInterface
+    private function resolvePath(ServerRequestInterface $request): ?RouterResult
     {
-        $response = null;
+        $result = null;
         $path = rtrim($request->getUri()->getPath(), '/');
         $method = $request->getMethod();
+        $matches = [];
 
         foreach ($this->config as $pattern => $method_controller) {
             if (@preg_match("~^{$pattern}$~iu", $path, $matches) === 1) {
                 if (isset($method_controller[$method])) {
-                    $response = $this->callController($method_controller[$method], $matches);
+                    $result = new RouterResult($method_controller[$method], $matches);
                     break;
                 }
             }
         }
 
-        return $response;
-    }
-
-    private function callController(string $controller_class, array $args = []): ResponseInterface
-    {
-        if (!$this->container->has($controller_class)) {
-            throw new RouterException("\"{$controller_class}\" is not configured in the container");
-        }
-
-        /* @var $controller Controller */
-        $controller = $this->container->get($controller_class);
-        $response = $controller->run($args);
-
-        return $response;
+        return $result;
     }
 }
