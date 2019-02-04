@@ -8,7 +8,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * NOTE: This middleware implementation requires the NaiveContainer package
+ * NOTE: This middleware implementation requires the logifire/naive-container package
  */
 class RouterMiddleware implements MiddlewareInterface
 {
