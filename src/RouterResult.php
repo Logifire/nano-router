@@ -1,8 +1,13 @@
 <?php
 namespace NaiveRouter;
 
-class RouterResult
+class RouterResult extends Result
 {
+
+    /**
+     * @var QueryResult
+     */
+    private $query_result;
 
     /**
      * @var string Class name
@@ -10,15 +15,16 @@ class RouterResult
     private $controller;
 
     /**
-     * @var array Matched URL parameters
+     * @param string $controller Controller class
+     * @param array $matches Matched patterns from the path
+     * @param Queryresult $query_result QueryResult 
      */
-    private $matches;
-
-    public function __construct(string $controller, array $matches)
+    public function __construct(string $controller, array $matches, QueryResult $query_result)
     {
 
         $this->controller = $controller;
         $this->matches = $matches;
+        $this->query_result = $query_result;
     }
 
     public function getController(): string
@@ -26,30 +32,8 @@ class RouterResult
         return $this->controller;
     }
 
-    public function hasString(string $name): bool
+    public function getQueryResult(): QueryResult
     {
-        return isset($this->matches[$name]);
-    }
-
-    public function getString(string $name): string
-    {
-        if (!$this->hasString($name)) {
-            throw new ResultException("No string mathches for {$name}");
-        }
-        return $this->matches[$name];
-    }
-
-    public function hasInteger(string $name): bool
-    {
-        return isset($this->matches[$name]) && is_numeric($this->matches[$name]);
-    }
-
-    public function getInetger(string $name): int
-    {
-        if (!$this->hasInteger($name)) {
-            throw new ResultException("No integer matches for {$name}");
-        }
-
-        return (int) $this->matches[$name];
+        return $this->query_result;
     }
 }

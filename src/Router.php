@@ -47,14 +47,16 @@ class Router
     private function resolvePath(ServerRequestInterface $request): ?RouterResult
     {
         $result = null;
-        $path = rtrim($request->getUri()->getPath(), '/');
         $method = $request->getMethod();
+        $uri = $request->getUri();
+        $path = rtrim($uri->getPath(), '/');
         $matches = [];
 
         foreach ($this->config as $pattern => $method_controller) {
             if (@preg_match("~^{$pattern}$~iu", $path, $matches) === 1) {
                 if (isset($method_controller[$method])) {
-                    $result = new RouterResult($method_controller[$method], $matches);
+                    $query_result = new QueryResult($uri->getQuery());
+                    $result = new RouterResult($method_controller[$method], $matches, $query_result);
                     break;
                 }
             }
