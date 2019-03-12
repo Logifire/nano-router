@@ -1,6 +1,6 @@
 <?php
 
-namespace NaiveRouter\Exception;
+namespace NanoRouter\Exception;
 
 use RuntimeException;
 

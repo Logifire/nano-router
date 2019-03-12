@@ -1,7 +1,7 @@
 <?php
-namespace NaiveRouter;
+namespace NanoRouter;
 
-use NaiveRouter\Exception\RouterException;
+use NanoRouter\Exception\RouterException;
 use Psr\Http\Message\ServerRequestInterface;
 
 class Router

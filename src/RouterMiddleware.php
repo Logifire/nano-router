@@ -1,7 +1,7 @@
 <?php
-namespace NaiveRouter;
+namespace NanoRouter;
 
-use NaiveContainer\Factory as ContainerFactory;
+use NanoContainer\Factory as ContainerFactory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;

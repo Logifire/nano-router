@@ -1,5 +1,5 @@
 {
-    "name": "logifire/naive-router",
+    "name": "logifire/nano-router",
     "description": "Router implementation using PSR-7",
     "license": "MIT",
     "require": {
@@ -10,22 +10,22 @@
     },
     "autoload": {
         "psr-4": {
-            "NaiveRouter\\": "src/"
+            "NanoRouter\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": { 
-            "NaiveRouter\\Tests\\": "tests/" 
+            "NanoRouter\\Tests\\": "tests/" 
         }
     },
     "require-dev": {
         "phpunit/phpunit": "7.5.1",
         "nyholm/psr7": "1.0.1",
-        "logifire/naive-container": "^1.1.0",
-        "logifire/naive-middleware": "^0.0.1"
+        "logifire/nano-container": "^1.1.0",
+        "logifire/nano-middleware": "^0.0.1"
     },
     "suggest": {
-        "logifire/naive-container": "A PSR-11 container implementation, required for the middleware implementation.",
-        "logifire/naive-middleware": "A PSR-15 middleware implementation."
+        "logifire/nano-container": "A PSR-11 container implementation, required for the middleware implementation.",
+        "logifire/nano-middleware": "A PSR-15 middleware implementation."
     }
 }

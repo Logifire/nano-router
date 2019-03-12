@@ -1,8 +1,8 @@
 <?php
-namespace NaiveRouter\Tests;
+namespace NanoRouter\Tests;
 
-use NaiveRouter\Controller;
-use NaiveRouter\RouterResult;
+use NanoRouter\Controller;
+use NanoRouter\RouterResult;
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

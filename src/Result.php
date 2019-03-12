@@ -1,5 +1,5 @@
 <?php
-namespace NaiveRouter;
+namespace NanoRouter;
 
 abstract class Result
 {

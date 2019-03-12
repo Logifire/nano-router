@@ -1,7 +1,7 @@
 <?php
-namespace NaiveRouter\Tests;
+namespace NanoRouter\Tests;
 
-use NaiveRouter\Router;
+use NanoRouter\Router;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 

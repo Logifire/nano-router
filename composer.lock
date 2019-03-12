@@ -294,7 +294,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "NaiveContainer\\": "src"
+                    "NanoContainer\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -334,7 +334,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "NaiveMiddleware\\": "src/"
+                    "NanoMiddleware\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",

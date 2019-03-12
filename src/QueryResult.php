@@ -1,5 +1,5 @@
 <?php
-namespace NaiveRouter;
+namespace NanoRouter;
 
 class QueryResult extends Result
 {

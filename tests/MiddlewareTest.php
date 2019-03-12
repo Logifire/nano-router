@@ -1,12 +1,12 @@
 <?php
-namespace NaiveRouter\Tests;
+namespace NanoRouter\Tests;
 
-use NaiveContainer\Container;
-use NaiveContainer\ContainerFactory;
-use NaiveMiddleware\RequestHandler;
-use NaiveRouter\Router;
-use NaiveRouter\RouterMiddleware;
-use NaiveRouter\RouterResult;
+use NanoContainer\Container;
+use NanoContainer\ContainerFactory;
+use NanoMiddleware\RequestHandler;
+use NanoRouter\Router;
+use NanoRouter\RouterMiddleware;
+use NanoRouter\RouterResult;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
