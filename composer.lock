@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "a5c9b64862d1dd5cd0a3fa1f9fdd5837",
+    "content-hash": "8da62cde922af88030afc6d24e05c8e0",
     "packages": [
         {
             "name": "psr/container",
@@ -268,17 +268,17 @@
             "time": "2017-07-22T11:58:36+00:00"
         },
         {
-            "name": "logifire/naive-container",
-            "version": "1.2.0",
+            "name": "logifire/nano-container",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Logifire/naive-container.git",
-                "reference": "7263d942bd5dce91f615149fccdbe876ab8dc100"
+                "url": "https://github.com/Logifire/nano-container.git",
+                "reference": "09be154f666d953097ff8ed28e4ae74a7fa0b3fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Logifire/naive-container/zipball/7263d942bd5dce91f615149fccdbe876ab8dc100",
-                "reference": "7263d942bd5dce91f615149fccdbe876ab8dc100",
+                "url": "https://api.github.com/repos/Logifire/nano-container/zipball/09be154f666d953097ff8ed28e4ae74a7fa0b3fc",
+                "reference": "09be154f666d953097ff8ed28e4ae74a7fa0b3fc",
                 "shasum": ""
             },
             "require": {
@@ -302,20 +302,20 @@
                 "MIT"
             ],
             "description": "PSR-11 container",
-            "time": "2019-02-04T19:32:49+00:00"
+            "time": "2019-03-12T16:10:40+00:00"
         },
         {
-            "name": "logifire/naive-middleware",
-            "version": "0.0.1",
+            "name": "logifire/nano-middleware",
+            "version": "0.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Logifire/naive-middleware.git",
-                "reference": "0422182abf773b2b48be24aece4ed1df0f54b242"
+                "url": "https://github.com/Logifire/nano-middleware.git",
+                "reference": "6d8b90d8d6dda5877460e841d360ff1047a6b8ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Logifire/naive-middleware/zipball/0422182abf773b2b48be24aece4ed1df0f54b242",
-                "reference": "0422182abf773b2b48be24aece4ed1df0f54b242",
+                "url": "https://api.github.com/repos/Logifire/nano-middleware/zipball/6d8b90d8d6dda5877460e841d360ff1047a6b8ff",
+                "reference": "6d8b90d8d6dda5877460e841d360ff1047a6b8ff",
                 "shasum": ""
             },
             "require": {
@@ -342,7 +342,7 @@
                 "MIT"
             ],
             "description": "PSR-15 request handler implementation",
-            "time": "2019-01-04T22:19:39+00:00"
+            "time": "2019-03-12T15:54:27+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -977,16 +977,16 @@
         },
         {
             "name": "phpunit/php-timer",
-            "version": "2.0.0",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-timer.git",
-                "reference": "8b8454ea6958c3dee38453d3bd571e023108c91f"
+                "reference": "8b389aebe1b8b0578430bda0c7c95a829608e059"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-timer/zipball/8b8454ea6958c3dee38453d3bd571e023108c91f",
-                "reference": "8b8454ea6958c3dee38453d3bd571e023108c91f",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-timer/zipball/8b389aebe1b8b0578430bda0c7c95a829608e059",
+                "reference": "8b389aebe1b8b0578430bda0c7c95a829608e059",
                 "shasum": ""
             },
             "require": {
@@ -998,7 +998,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0-dev"
+                    "dev-master": "2.1-dev"
                 }
             },
             "autoload": {
@@ -1022,7 +1022,7 @@
             "keywords": [
                 "timer"
             ],
-            "time": "2018-02-01T13:07:23+00:00"
+            "time": "2019-02-20T10:12:59+00:00"
         },
         {
             "name": "phpunit/php-token-stream",
