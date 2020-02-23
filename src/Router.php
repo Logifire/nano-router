@@ -20,6 +20,12 @@ class Router
     ];
 
     /**
+     * @param string $method HTTP method e.g. GET
+     * @param string $path Request path e.g. /admin
+     * @param string $controller The fully qualified class name
+     * 
+     * @return void
+     * 
      * @throws RouterException If path is already configured, or unsupported method
      */
     public function configurePath(string $method, string $path, string $controller): void
