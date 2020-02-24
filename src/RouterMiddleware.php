@@ -16,34 +16,42 @@ class RouterMiddleware implements MiddlewareInterface
     /**
      * @var ContainerFactory
      */
-    private $factory;
+    private $container_factory;
 
     /**
      * @var Router
      */
     private $router;
 
-    public function __construct(Router $router, ContainerFactory $factory)
+    public function __construct(Router $router, ContainerFactory $container_factory)
     {
 
         $this->router = $router;
-        $this->factory = $factory;
+        $this->container_factory = $container_factory;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $result = $this->router->run($request);
+        $router_result = $this->router->processRequest($request);
+        $path_result = $router_result->getPathResult();
+        $query_result = $router_result->getQueryResult();
+        $controller_name = $router_result->getControllerName();
 
-        $this->factory->set(ServerRequestInterface::class, $request);
-        $this->factory->set(RouterResult::class, $result);
-        $container = $this->factory->createContainer();
+        $this->container_factory->set(ServerRequestInterface::class, $request);
 
-        if ($result && $container->has($result->getController())) {
-            /* @var $controller Controller */
-            $controller = $container->get($result->getController());
-            return $controller->run();
+        $this->container_factory->set(PathResult::class, $path_result);
+        $this->container_factory->set(QueryResult::class, $query_result);
+
+        $container = $this->container_factory->createContainer();
+
+        if (!$router_result || !$container->has($controller_name)) {
+            // Can't handle the request at this point, delegate to next middleware
+            return $handler->handle($request);
         }
 
-        return $handler->handle($request);
+        /** @var Controller $controller */
+        $controller = $container->get($controller_name);
+        $response = $controller->buildResponse();
+        return $response;
     }
 }

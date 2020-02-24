@@ -1,7 +1,7 @@
 <?php
 namespace NanoRouter;
 
-abstract class Result
+abstract class RequestResult
 {
 
     /**

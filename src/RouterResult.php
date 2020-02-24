@@ -1,8 +1,18 @@
 <?php
 namespace NanoRouter;
 
-class RouterResult extends Result
+class RouterResult
 {
+
+    /**
+     * @var string Fully qualified class name
+     */
+    private $controller_name;
+
+    /**
+     * @var PathResult
+     */
+    private $path_result;
 
     /**
      * @var QueryResult
@@ -10,30 +20,33 @@ class RouterResult extends Result
     private $query_result;
 
     /**
-     * @var string Class name
-     */
-    private $controller;
-
-    /**
-     * @param string $controller Controller class
+     * @param string $controller_name Fully qualified class name
      * @param array $matches Matched patterns from the path
      * @param Queryresult $query_result QueryResult 
      */
-    public function __construct(string $controller, array $matches, QueryResult $query_result)
+    public function __construct(string $controller_name, PathResult $path_result, QueryResult $query_result)
     {
 
-        $this->controller = $controller;
-        $this->matches = $matches;
+        $this->controller_name = $controller_name;
+        $this->path_result = $path_result;
         $this->query_result = $query_result;
     }
 
-    public function getController(): string
+    /**
+     * Gets the fully qualified class name of the controller
+     */
+    public function getControllerName(): string
     {
-        return $this->controller;
+        return $this->controller_name;
     }
 
     public function getQueryResult(): QueryResult
     {
         return $this->query_result;
+    }
+
+    public function getPathResult(): PathResult
+    {
+        return $this->path_result;
     }
 }

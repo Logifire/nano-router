@@ -12,7 +12,7 @@ class Router
      */
     private $config;
 
-    public const METHODS = [
+    private const METHODS = [
         'GET',
         'POST',
         'PUT',
@@ -45,7 +45,7 @@ class Router
         $this->config[$path] = [$method => $controller];
     }
 
-    public function run(ServerRequestInterface $request): ?RouterResult
+    public function processRequest(ServerRequestInterface $request): ?RouterResult
     {
         return $this->resolvePath($request);
     }
@@ -61,8 +61,10 @@ class Router
         foreach ($this->config as $pattern => $method_controller) {
             if (@preg_match("~^{$pattern}$~iu", $path, $matches) === 1) {
                 if (isset($method_controller[$method])) {
+                    $controller_name = $method_controller[$method];
+                    $path_result = new PathResult($matches);
                     $query_result = new QueryResult($uri->getQuery());
-                    $result = new RouterResult($method_controller[$method], $matches, $query_result);
+                    $result = new RouterResult($controller_name, $path_result, $query_result);
                     break;
                 }
             }

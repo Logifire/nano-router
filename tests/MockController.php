@@ -2,7 +2,7 @@
 namespace NanoRouter\Tests;
 
 use NanoRouter\Controller;
-use NanoRouter\RouterResult;
+use NanoRouter\PathResult;
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -16,26 +16,26 @@ class MockController implements Controller
     private $server_request;
 
     /**
-     * @var RouterResult
+     * @var PathResult
      */
-    private $result;
+    private $path_result;
 
     public const RESPONSE_BODY = 'MockControllerResponse';
 
-    public function __construct(ServerRequestInterface $server_request, RouterResult $result)
+    public function __construct(ServerRequestInterface $server_request, PathResult $path_result)
     {
 
-        $this->result = $result;
+        $this->path_result = $path_result;
         $this->server_request = $server_request;
     }
 
-    public function run(): ResponseInterface
+    public function buildResponse(): ResponseInterface
     {
         $requested_path = (string) $this->server_request->getUri();
         $body = self::RESPONSE_BODY . " {$requested_path}";
 
-        if ($this->result->hasInteger('user_id')) {
-            $user_id = $this->result->getInetger('user_id');
+        if ($this->path_result->hasInteger('user_id')) {
+            $user_id = $this->path_result->getInetger('user_id');
             $body .= " - User ID: {$user_id}";
         }
 

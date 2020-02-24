@@ -20,12 +20,16 @@
 
     ...
     // Request handling
-    $router_result = $router->run($server_request);
+    $router_result = $router->processRequest($server_request);
 
     if ($router_result !== null) {
-        $controller_name = $router_result->getController();
+        $controller_name = $router_result->getControllerName();
+        $path_result = $router_result->getPathResult();
+        $query_result = $router_result->getQueryResult();
+
         $controller = new $controller_name({dependencies});
-        $psr7_response = $controller->run();
+
+        $psr7_response = $controller->buildResponse();
     }
     ... 
 

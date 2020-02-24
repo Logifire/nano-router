@@ -1,7 +1,7 @@
 <?php
 namespace NanoRouter;
 
-class QueryResult extends Result
+class QueryResult extends RequestResult
 {
 
     public function __construct(string $query)

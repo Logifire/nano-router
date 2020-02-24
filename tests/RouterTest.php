@@ -29,25 +29,27 @@ class RouterTest extends TestCase
         $integer_id_path = "/profiles/{$id}";
         $server_request = new ServerRequest('GET', "{$integer_id_path}/?foo=bar&baz=xyz#test");
 
-        $result = $router->run($server_request);
-        $this->assertSame($controller_class, $result->getController());
-        $this->assertTrue($result->hasInteger('id'));
-        $this->assertSame($id, $result->getInetger('id'));
+        $router_result = $router->processRequest($server_request);
+        $this->assertSame($controller_class, $router_result->getControllerName());
+        $path_result = $router_result->getPathResult();
+        $this->assertTrue($path_result->hasInteger('id'));
+        $this->assertSame($id, $path_result->getInetger('id'));
     }
 
     public function testSimilarPath()
     {
-        $controller_class = 'MockController';
-        $router = $this->configureRouter($controller_class);
+        $controller_name = 'MockController';
+        $router = $this->configureRouter($controller_name);
 
         $uuid = 'a7598692-307e-4782-8229-8429d32ba42f';
         $uuid_path = "/profiles/{$uuid}";
         $server_request = new ServerRequest('GET', "{$uuid_path}/#test");
 
-        $result = $router->run($server_request);
-        $this->assertSame($controller_class, $result->getController());
-        $this->assertTrue($result->hasString('uuid'));
-        $this->assertSame($uuid, $result->getString('uuid'));
+        $router_result = $router->processRequest($server_request);
+        $path_result = $router_result->getPathResult();
+        $this->assertSame($controller_name, $router_result->getControllerName());
+        $this->assertTrue($path_result->hasString('uuid'));
+        $this->assertSame($uuid, $path_result->getString('uuid'));
     }
 
     public function testQueryResult()
@@ -57,8 +59,8 @@ class RouterTest extends TestCase
 
         $server_request = new ServerRequest('GET', "/profiles/1234/?first=value&arr[]=foo+bar&arr[]=baz");
 
-        $result = $router->run($server_request);
-        $query_result = $result->getQueryResult();
+        $router_result = $router->processRequest($server_request);
+        $query_result = $router_result->getQueryResult();
 
         $this->assertTrue($query_result->hasString('first'));
         $this->assertSame('value', $query_result->getString('first'));
