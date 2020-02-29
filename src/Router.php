@@ -34,15 +34,15 @@ class Router
             throw new RouterException("Method not supported: {$method}");
         }
 
-        if (isset($this->config[$path][$method])) {
+        if (isset($this->config[$method][$path])) {
             throw new RouterException("Path \"{$path}\" ({$method}) is already configured.");
         }
 
-        if (@preg_match("~{$path}~", '') === false) {
+        if (preg_match("~{$path}~", '') === false) {
             throw new RouterException("Invalid path: {$path}");
         }
 
-        $this->config[$path] = [$method => $controller];
+        $this->config[$method][$path] = $controller;
     }
 
     public function processRequest(ServerRequestInterface $request): ?RouterResult
@@ -53,20 +53,19 @@ class Router
     private function resolvePath(ServerRequestInterface $request): ?RouterResult
     {
         $result = null;
-        $method = $request->getMethod();
+        $method = strtoupper($request->getMethod());
         $uri = $request->getUri();
         $path = rtrim($uri->getPath(), '/');
         $matches = [];
 
-        foreach ($this->config as $pattern => $method_controller) {
-            if (@preg_match("~^{$pattern}$~iu", $path, $matches) === 1) {
-                if (isset($method_controller[$method])) {
-                    $controller_name = $method_controller[$method];
-                    $path_result = new PathResult($matches);
-                    $query_result = new QueryResult($uri->getQuery());
-                    $result = new RouterResult($controller_name, $path_result, $query_result);
-                    break;
-                }
+        $paths = $this->config[$method] ?? [];
+
+        foreach ($paths as $pattern => $controller_name) {
+            if (preg_match("~^{$pattern}$~iu", $path, $matches) === 1) {
+                $path_result = new PathResult($matches);
+                $query_result = new QueryResult($uri->getQuery());
+                $result = new RouterResult($controller_name, $path_result, $query_result);
+                break;
             }
         }
 
