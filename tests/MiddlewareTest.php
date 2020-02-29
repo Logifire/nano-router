@@ -33,8 +33,8 @@ class MiddlewareTest extends TestCase
 
         $response_factory = new Psr17Factory();
         $handler = new RequestHandler($response_factory);
-        $handler->addMiddleware(new RouterMiddleware($router, $container_factory));
-
+        $handler->addMiddleware(new RouterMiddleware($router));
+        $handler->addMiddleware(new MockMiddelware($container_factory));
 
         $response = $handler->handle($server_request);
 
