@@ -15,8 +15,8 @@
     ...
     // Router configuration
     $router = new Router();
-    $router->configurePath('GET', '/profiles/(?<uuid>[0-9a-f\-]{36})', StringController::class);
-    $router->configurePath('GET', '/profiles/(?<id>\d+)', IntegerController::class);
+    $router->configurePath(Router::METHOD_GET, '/profiles/(?<uuid>[0-9a-f\-]{36})', StringController::class);
+    $router->configurePath(Router::METHOD_GET, '/profiles/(?<id>\d+)', IntegerController::class);
 
     ...
     // Request handling
