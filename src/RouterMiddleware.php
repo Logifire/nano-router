@@ -24,7 +24,7 @@ class RouterMiddleware implements MiddlewareInterface
     {
         $router_result = $this->router->processRequest($request);
         $request = $request->withAttribute(RouterResult::class, $router_result);
-
-        return $handler->handle($request);
+        $response = $handler->handle($request);
+        return $response;
     }
 }
