@@ -7,6 +7,13 @@ use Psr\Http\Message\ServerRequestInterface;
 class Router
 {
 
+    public const METHOD_GET = 'GET';
+    public const METHOD_POST = 'POST';
+    public const MEHOD_PUT = 'PUT';
+    public const METHOD_DELETE = 'DELETE';
+    public const METHOD_PATCH = 'PATCH';
+    public const METHOD_OPTIONS = 'OPTIONS';
+
     /**
      * @var string[][] E.g.: ['/' => ['GET' => ShowIndex::class]]
      */
@@ -17,10 +24,12 @@ class Router
         'POST',
         'PUT',
         'DELETE',
+        'PATCH',
+        'OPTIONS'
     ];
 
     /**
-     * @param string $method HTTP method e.g. GET
+     * @param string $method HTTP method e.g. GET. See self::METHOD_* constants.
      * @param string $path Request path e.g. /admin
      * @param string $controller The fully qualified class name
      * 
@@ -30,8 +39,6 @@ class Router
      */
     public function configurePath(string $method, string $path, string $controller): void
     {
-        $path = strtolower($path);
-
         if (!in_array($method, self::METHODS)) {
             throw new RouterException("Method not supported: {$method}");
         }
@@ -57,7 +64,7 @@ class Router
         $result = null;
         $method = strtoupper($request->getMethod());
         $uri = $request->getUri();
-        $requested_path = strtolower(rtrim($uri->getPath(), '/'));
+        $requested_path = rtrim($uri->getPath(), '/');
         $matches = [];
         $registered_paths = $this->routes[$method] ?? [];
 
@@ -70,7 +77,7 @@ class Router
         } else {
             // Dynamic routes
             foreach ($registered_paths as $path_pattern => $controller_name) {
-                if (preg_match("~^{$path_pattern}$~iu", $requested_path, $matches) === 1) {
+                if (preg_match("~^{$path_pattern}$~u", $requested_path, $matches) === 1) {
                     $path_result = new PathResult($matches);
                     $query_result = new QueryResult($uri->getQuery());
                     $result = new RouterResult($controller_name, $path_result, $query_result);

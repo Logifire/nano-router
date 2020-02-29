@@ -11,12 +11,12 @@ class RouterTest extends TestCase
     private function configureRouter(string $controller_name): Router
     {
         $router = new Router();
-        $router->configurePath('GET', '/profiles/(?<uuid>[0-9a-f\-]{36})', $controller_name);
-        $router->configurePath('GET', '/profiles/(?<id>\d+)', $controller_name);
-        $router->configurePath('GET', '/profiles', 'Invalid');
-        $router->configurePath('GET', '/profiles/abc', 'Invalid');
-        $router->configurePath('GET', '/profiles/(?<id>\d+)/children', 'Invalid');
-        $router->configurePath('GET', '/profiles/static', $controller_name);
+        $router->configurePath(Router::METHOD_GET, '/profiles/(?<uuid>[0-9a-f\-]{36})', $controller_name);
+        $router->configurePath(Router::METHOD_GET, '/profiles/(?<id>\d+)', $controller_name);
+        $router->configurePath(Router::METHOD_GET, '/profiles', 'Invalid');
+        $router->configurePath(Router::METHOD_GET, '/profiles/abc', 'Invalid');
+        $router->configurePath(Router::METHOD_GET, '/profiles/(?<id>\d+)/children', 'Invalid');
+        $router->configurePath(Router::METHOD_GET, '/profiles/static', $controller_name);
 
         return $router;
     }
@@ -64,6 +64,7 @@ class RouterTest extends TestCase
         $query_result = $router_result->getQueryResult();
 
         $this->assertTrue($query_result->hasString('first'));
+        $this->assertFalse($query_result->hasString('First'), 'Parameters are case sensitive');
         $this->assertSame('value', $query_result->getString('first'));
 
         $this->assertFalse($query_result->hasString('arr'));
@@ -79,8 +80,19 @@ class RouterTest extends TestCase
         $controller_name = MockController::class;
         $router = $this->configureRouter($controller_name);
 
-        $server_request = new ServerRequest('GET', "/profiles/StatiC/");
+        $server_request = new ServerRequest('GET', "/profiles/static/");
         $router_result = $router->processRequest($server_request);
         $this->assertSame($controller_name, $router_result->getControllerName());
+    }
+
+    public function testInvalidPath()
+    {
+        $controller_name = MockController::class;
+        $router = $this->configureRouter($controller_name);
+
+        // Paths are case sensitive
+        $server_request = new ServerRequest('GET', "/Profiles/Static/");
+        $router_result = $router->processRequest($server_request);
+        $this->assertNull($router_result);
     }
 }
