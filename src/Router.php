@@ -18,7 +18,8 @@ class Router
     /**
      * @var string[][] E.g.: ['/' => ['GET' => ShowIndex::class]]
      */
-    private $routes;
+    private $static_routes;
+    private $dynamic_routes;
 
     private const METHODS = [
         'GET',
@@ -32,7 +33,7 @@ class Router
 
     /**
      * @param string $method HTTP method e.g. GET. See self::METHOD_* constants.
-     * @param string $path Request path e.g. /admin
+     * @param string $path Request path e.g. /profiles/(?<uuid>[0-9a-f\-]{36})
      * @param string $controller The fully qualified class name
      * 
      * @return void
@@ -45,7 +46,7 @@ class Router
             throw new RouterException("Method not supported: {$method}");
         }
 
-        if (isset($this->routes[$method][$path])) {
+        if (isset($this->static_routes[$method][$path])) {
             throw new RouterException("Path \"{$path}\" ({$method}) is already configured.");
         }
 
@@ -53,7 +54,13 @@ class Router
             throw new RouterException("Invalid path: {$path}");
         }
 
-        $this->routes[$method][$path] = $controller;
+        $is_dynamic_path = preg_match('~/\([^/]+\)~', $path) === 1;
+
+        if ($is_dynamic_path) {
+            $this->dynamic_routes[$method][$path] = $controller;
+        } else {
+            $this->static_routes[$method][$path] = $controller;
+        }
     }
 
     public function processRequest(ServerRequestInterface $request): ?RouterResult
@@ -63,21 +70,21 @@ class Router
 
     private function resolvePath(ServerRequestInterface $request): ?RouterResult
     {
-        $result           = null;
-        $method           = strtoupper($request->getMethod());
-        $uri              = $request->getUri();
-        $requested_path   = rtrim($uri->getPath(), '/');
-        $matches          = [];
-        $registered_paths = $this->routes[$method] ?? [];
+        $result         = null;
+        $method         = strtoupper($request->getMethod());
+        $uri            = $request->getUri();
+        $requested_path = rtrim($uri->getPath(), '/');
+        $matches        = [];
 
-        if (isset($registered_paths[$requested_path])) {
+        if (isset($this->static_routes[$method][$requested_path])) {
             // Static routes
-            $controller_name = $registered_paths[$requested_path];
+            $controller_name = $this->static_routes[$method][$requested_path];
             $path_result     = new PathResult($matches);
             $query_result    = new QueryResult($uri->getQuery());
             $result          = new RouterResult($controller_name, $path_result, $query_result);
         } else {
             // Dynamic routes
+            $registered_paths = $this->dynamic_routes[$method] ?? [];
             foreach ($registered_paths as $path_pattern => $controller_name) {
                 if (preg_match("~^{$path_pattern}$~u", $requested_path, $matches) === 1) {
                     $path_result  = new PathResult($matches);
