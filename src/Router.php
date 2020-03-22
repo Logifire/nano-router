@@ -13,7 +13,7 @@ class Router
     public const METHOD_DELETE  = 'DELETE';
     public const METHOD_PATCH   = 'PATCH';
     public const METHOD_OPTIONS = 'OPTIONS';
-    public const METHOD_HEAD    = 'OPTIONS';
+    public const METHOD_HEAD    = 'HEAD';
 
     /**
      * @var string[][] E.g.: ['/' => ['GET' => ShowIndex::class]]
