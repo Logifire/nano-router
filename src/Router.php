@@ -1,4 +1,5 @@
 <?php
+
 namespace NanoRouter;
 
 use NanoRouter\Exception\RouterException;
@@ -6,13 +7,13 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class Router
 {
-
-    public const METHOD_GET = 'GET';
-    public const METHOD_POST = 'POST';
-    public const MEHOD_PUT = 'PUT';
-    public const METHOD_DELETE = 'DELETE';
-    public const METHOD_PATCH = 'PATCH';
+    public const METHOD_GET     = 'GET';
+    public const METHOD_POST    = 'POST';
+    public const MEHOD_PUT      = 'PUT';
+    public const METHOD_DELETE  = 'DELETE';
+    public const METHOD_PATCH   = 'PATCH';
     public const METHOD_OPTIONS = 'OPTIONS';
+    public const METHOD_HEAD    = 'OPTIONS';
 
     /**
      * @var string[][] E.g.: ['/' => ['GET' => ShowIndex::class]]
@@ -25,7 +26,8 @@ class Router
         'PUT',
         'DELETE',
         'PATCH',
-        'OPTIONS'
+        'OPTIONS',
+        'HEAD'
     ];
 
     /**
@@ -61,26 +63,26 @@ class Router
 
     private function resolvePath(ServerRequestInterface $request): ?RouterResult
     {
-        $result = null;
-        $method = strtoupper($request->getMethod());
-        $uri = $request->getUri();
-        $requested_path = rtrim($uri->getPath(), '/');
-        $matches = [];
+        $result           = null;
+        $method           = strtoupper($request->getMethod());
+        $uri              = $request->getUri();
+        $requested_path   = rtrim($uri->getPath(), '/');
+        $matches          = [];
         $registered_paths = $this->routes[$method] ?? [];
 
         if (isset($registered_paths[$requested_path])) {
             // Static routes
             $controller_name = $registered_paths[$requested_path];
-            $path_result = new PathResult($matches);
-            $query_result = new QueryResult($uri->getQuery());
-            $result = new RouterResult($controller_name, $path_result, $query_result);
+            $path_result     = new PathResult($matches);
+            $query_result    = new QueryResult($uri->getQuery());
+            $result          = new RouterResult($controller_name, $path_result, $query_result);
         } else {
             // Dynamic routes
             foreach ($registered_paths as $path_pattern => $controller_name) {
                 if (preg_match("~^{$path_pattern}$~u", $requested_path, $matches) === 1) {
-                    $path_result = new PathResult($matches);
+                    $path_result  = new PathResult($matches);
                     $query_result = new QueryResult($uri->getQuery());
-                    $result = new RouterResult($controller_name, $path_result, $query_result);
+                    $result       = new RouterResult($controller_name, $path_result, $query_result);
                     break;
                 }
             }
