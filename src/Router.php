@@ -42,6 +42,24 @@ class Router
      */
     public function configurePath(string $method, string $path, string $controller): void
     {
+        // TEST
+
+        $segments     = ['profiles', 'denmark', 'all'];
+        $build_routes = [];
+        $last_route   = [];
+
+        foreach ($segments as $segment) {
+            if (empty($last_route)) {
+                $build_routes[$segment] = 'a';
+            } else {
+                $last_route[$segment] = 'a';
+            }
+
+            $last_route = $build_routes;
+        }
+
+        // TEST
+
         if (!in_array($method, self::METHODS)) {
             throw new RouterException("Method not supported: {$method}");
         }
@@ -54,9 +72,22 @@ class Router
             throw new RouterException("Invalid path: {$path}");
         }
 
-        $is_dynamic_path = preg_match('~/\([^/]+\)~', $path) === 1;
+        $dynamic_match   = [];
+        // e.g. /profiles/(?<uuid>[0-9a-f\-]{36})
+        $is_dynamic_path = preg_match('~/\([^/]+\)~', $path, $dynamic_match, PREG_OFFSET_CAPTURE) === 1;
 
         if ($is_dynamic_path) {
+            $first_dynamic_segment = $dynamic_match[0];
+            $offset                = $first_dynamic_segment[1];
+
+            $bytes_to_segment = substr($path, 0, $offset);
+            $bytes_to_segment = ltrim($bytes_to_segment, '/');
+            $path_segments    = explode('/', $bytes_to_segment);
+
+            $build_dynamic_routes = [];
+            foreach ($path_segments as $segment) {
+                $build_dynamic_routes = [$segment];
+            }
             $this->dynamic_routes[$method][$path] = $controller;
         } else {
             $this->static_routes[$method][$path] = $controller;

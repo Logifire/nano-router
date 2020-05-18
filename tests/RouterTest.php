@@ -17,6 +17,8 @@ class RouterTest extends TestCase
         $router->configurePath(Router::METHOD_GET, '/profiles/abc', 'Invalid');
         $router->configurePath(Router::METHOD_GET, '/profiles/(?<id>\d+)/children', 'Invalid');
         $router->configurePath(Router::METHOD_GET, '/profiles/static', $controller_name);
+        $router->configurePath(Router::METHOD_GET, '/(?<id>\d+)', 'Invalid');
+        $router->configurePath(Router::METHOD_GET, '/category/(?<id>\d+)', 'Invalid');
 
         return $router;
     }
