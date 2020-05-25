@@ -1,5 +1,5 @@
 <?php
-namespace NanoRouter;
+namespace NanoRouter\Result;
 
 abstract class RequestResult
 {
