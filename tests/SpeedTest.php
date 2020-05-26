@@ -146,6 +146,31 @@ $segments = [
 
 $path = 'user/hello';
 
+function configure(string $path, string $handler, array &$configured_paths): void
+{
+    ltrim($path, '/');
+    $segments = explode('/', $path);
+
+    $current = &$configured_paths;
+    foreach ($segments as $segment) {
+        if (isset($current[$segment]) && !is_string($current[$segment])) {
+            $current = &$current[$segment];
+            continue;
+        } else {
+            $current[$segment] = '';
+            // Sort dynamic segmants to be first
+            ksort($current);
+            $current = &$current[$segment];
+        }
+    }
+
+    $current = $handler;
+}
+
+//configure($path, 'Controller 10', $segments);
+$router = new Router();
+$router->configurePath(Router::METHOD_GET, $path, 'Controller 10');
+
 function resolve(array $requested_segments, array $configured_segments): ?string
 {
     static $index = 0;
@@ -159,7 +184,7 @@ function resolve(array $requested_segments, array $configured_segments): ?string
         // Check for dynamic routes
         $matches = [];
         $keys    = array_keys($configured_segments);
-        // TODO: Order the keys on configuration
+
         foreach ($keys as $key) {
             // Note: URLs are case sensitive https://www.w3.org/TR/WD-html40-970708/htmlweb.html
             if (preg_match("~^{$key}$~", $requested_segment, $matches) === 1) {
