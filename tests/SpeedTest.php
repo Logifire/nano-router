@@ -131,4 +131,52 @@ class SpeedTest
         echo 'TreeRoute not found time: '.$treeRouteResultNotFound.PHP_EOL;
     }
 }
-(new SpeedTest())->testSpeed();
+//(new SpeedTest())->testSpeed();
+
+$segments = [
+    '[a-z]+' => [
+        '[0-9]+' => 'Controller'
+    ],
+    'user' => [
+        '[a-z]+' => 'Controller 2',
+        'terms' => 'Controller 3',
+        '[0-9]+' => 'Controller 4',
+    ]
+];
+
+$path = 'user/123abc';
+
+function resolve(string $path, array $segments, &$index): ?string
+{
+    $matches            = [];
+    $requested_segemnts = explode('/', $path);
+
+    $requested_segment = $requested_segemnts[$index++];
+
+    if (!isset($segments[$requested_segment])) {
+        $keys = array_keys($segments);
+        foreach ($keys as $key) {
+            if (preg_match("~^{$key}$~u", $requested_segment, $matches) === 1) {
+                $current = &$segments[$key];
+                break;
+            }
+        }
+        if (empty($matches)) {
+            // Could not find any matches
+            return null;
+        }
+    } else {
+        $current = &$segments[$requested_segment];
+    }
+
+
+    if (is_string($current)) {
+        return $current;
+    }
+
+    return resolve($path, $current, $index);
+}
+$index = 0;
+var_dump(resolve($path, $segments, $index));
+
+echo 'Blag';
