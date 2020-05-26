@@ -144,39 +144,42 @@ $segments = [
     ]
 ];
 
-$path = 'user/123abc';
+$path = 'user/hello';
 
-function resolve(string $path, array $segments, &$index): ?string
+function resolve(array $requested_segments, array $configured_segments): ?string
 {
-    $matches            = [];
-    $requested_segemnts = explode('/', $path);
+    static $index = 0;
 
-    $requested_segment = $requested_segemnts[$index++];
+    $requested_segment = $requested_segments[$index++];
 
-    if (!isset($segments[$requested_segment])) {
-        $keys = array_keys($segments);
+    if (isset($configured_segments[$requested_segment])) {
+        // Static route exists
+        $current = &$configured_segments[$requested_segment];
+    } else {
+        // Check for dynamic routes
+        $matches = [];
+        $keys    = array_keys($configured_segments);
+        // TODO: Order the keys on configuration
         foreach ($keys as $key) {
-            if (preg_match("~^{$key}$~u", $requested_segment, $matches) === 1) {
-                $current = &$segments[$key];
+            // Note: URLs are case sensitive https://www.w3.org/TR/WD-html40-970708/htmlweb.html
+            if (preg_match("~^{$key}$~", $requested_segment, $matches) === 1) {
+                $current = &$configured_segments[$key];
                 break;
             }
         }
         if (empty($matches)) {
-            // Could not find any matches
+            // Could not find any dynamic routes
             return null;
         }
-    } else {
-        $current = &$segments[$requested_segment];
     }
 
-
     if (is_string($current)) {
+        // Current is a handler and not a path segment (array)
         return $current;
     }
 
-    return resolve($path, $current, $index);
+    return resolve($requested_segments, $current);
 }
-$index = 0;
-var_dump(resolve($path, $segments, $index));
+var_dump(resolve(explode('/', $path), $segments));
 
 echo 'Blag';
