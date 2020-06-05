@@ -173,8 +173,10 @@ function configure(string $path, string $handler, array &$configured_paths): voi
 $server_request = null;
 $router = new Router();
 $router->configurePath(Router::METHOD_GET, $path, 'Controller 10');
-$server_request = new ServerRequest('GET', "{$path}");
-$router->processRequest($server_request);
+$router->configurePath(Router::METHOD_GET, '/user/[a-z]+', 'Controller 2');
+$server_request = new ServerRequest('GET', "/user/boan");
+$result = $router->processRequest($server_request);
+var_dump($result);
 /*
 function resolve(array $requested_segments, array $configured_segments): ?string
 {

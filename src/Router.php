@@ -80,7 +80,7 @@ class Router
             throw new RouterException("Invalid path: {$path}");
         }
 
-        ltrim($path, '/');
+        $path = ltrim($path, '/');
         $segments = explode('/', $path);
         $current  = &$this->configured_paths[$method];
 
@@ -100,9 +100,29 @@ class Router
         $current = $controller;
     }
 
+    /**
+     * @param ServerRequestInterface $request
+     * @return RouterResult|null
+     */
     public function processRequest(ServerRequestInterface $request): ?RouterResult
     {
         return $this->resolvePath($request);
+    }
+
+    /**
+     *
+     * @param string $method e.g. GET
+     * @param string $requested_path e.g. /user/1234
+     * @return RouterResult|null
+     */
+    public function lookUp(string $method, string $requested_path): ?RouterResult
+    {
+        $result              = null;
+        ltrim($requested_path, '/');
+        $requested_segments  = explode('/', $requested_path);
+        $configured_segments = $this->configured_paths[$method];
+
+        $controller_name = $this->traverse($requested_segments, $configured_segments);
     }
 
     private function resolvePath(ServerRequestInterface $request): ?RouterResult
@@ -112,15 +132,14 @@ class Router
         $uri            = $request->getUri();
         $requested_path = rtrim($uri->getPath(), '/');
 
-        ltrim($requested_path, '/');
+        $requested_path = ltrim($requested_path, '/');
         $requested_segments  = explode('/', $requested_path);
         $configured_segments = $this->configured_paths[$method];
 
         $controller_name = $this->traverse($requested_segments, $configured_segments);
 
-        $path_result     = new PathResult([]);
-        $query_result    = new QueryResult($uri->getQuery());
-        $result          = new RouterResult($controller_name, $path_result, $query_result);
+        $path_result = new PathResult([]);
+        $result      = new RouterResult($controller_name, $path_result);
 
 
         return $result;
