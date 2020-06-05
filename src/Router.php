@@ -49,7 +49,7 @@ class Router
     ];
 
     /**
-     * Used by validators
+     * Used for input validation
      */
     private const METHODS = [
         'GET',
@@ -106,7 +106,13 @@ class Router
      */
     public function processRequest(ServerRequestInterface $request): ?RouterResult
     {
-        return $this->resolvePath($request);
+        $method         = $request->getMethod();
+        $uri            = $request->getUri();
+        $requested_path = $uri->getPath();
+
+        $result = $this->lookUp($method, $requested_path);
+
+        return $result;
     }
 
     /**
@@ -115,24 +121,12 @@ class Router
      * @param string $requested_path e.g. /user/1234
      * @return RouterResult|null
      */
-    public function lookUp(string $method, string $requested_path): ?RouterResult
+    public function lookUp(string $method, string $requested_path): RouterResult
     {
         $result              = null;
-        $requested_segments  = ltrim($requested_path, '/');
-        $requested_segments  = explode('/', $requested_path);
-        $configured_segments = $this->configured_paths[$method];
-
-        $controller_name = $this->traverse($requested_segments, $configured_segments);
-    }
-
-    private function resolvePath(ServerRequestInterface $request): ?RouterResult
-    {
-        $result         = null;
-        $method         = strtoupper($request->getMethod());
-        $uri            = $request->getUri();
-        $requested_path = rtrim($uri->getPath(), '/');
-
+        $method              = strtoupper($method);
         $requested_path      = ltrim($requested_path, '/');
+        $requested_path      = rtrim($requested_path, '/');
         $requested_segments  = explode('/', $requested_path);
         $configured_segments = $this->configured_paths[$method];
 
@@ -142,13 +136,12 @@ class Router
         $path_result = new PathResult($path_keys);
         $result      = new RouterResult($controller_name, $path_result);
 
-
         return $result;
     }
 
     private function traverse(array $requested_segments, array $configured_segments): array
     {
-        static $index        = 0;
+        static $index     = 0;
         static $path_keys = [];
 
         $requested_segment = $requested_segments[$index++];
@@ -165,29 +158,35 @@ class Router
                 // Note: URLs are case sensitive https://www.w3.org/TR/WD-html40-970708/htmlweb.html
                 if (preg_match("~^{$key}$~", $requested_segment, $matches) === 1) {
                     next($matches);
-                    $named_key                = key($matches) ?: $key;
+                    $named_key             = key($matches) ?: $key;
                     $path_keys[$named_key] = $requested_segment;
-                    $current                  = &$configured_segments[$key];
+                    $current               = &$configured_segments[$key];
                     break;
                 }
             }
 
             if (empty($matches)) {
                 // Could not find any dynamic routes
-                $result = [
+                $result    = [
                     'controller_name' => '',
                     'path_keys' => [],
                 ];
+                // Reset (static values)
+                $index     = 0;
+                $path_keys = [];
                 return $result;
             }
         }
 
         if (is_string($current)) {
             // Current is a handler and not a path segment (array)
-            $result = [
+            $result    = [
                 'controller_name' => $current,
                 'path_keys' => $path_keys,
             ];
+            // Reset (static values)
+            $index     = 0;
+            $path_keys = [];
             return $result;
         }
 
