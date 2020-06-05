@@ -80,7 +80,7 @@ class Router
             throw new RouterException("Invalid path: {$path}");
         }
 
-        $path = ltrim($path, '/');
+        $path     = ltrim($path, '/');
         $segments = explode('/', $path);
         $current  = &$this->configured_paths[$method];
 
@@ -118,7 +118,7 @@ class Router
     public function lookUp(string $method, string $requested_path): ?RouterResult
     {
         $result              = null;
-        ltrim($requested_path, '/');
+        $requested_segments  = ltrim($requested_path, '/');
         $requested_segments  = explode('/', $requested_path);
         $configured_segments = $this->configured_paths[$method];
 
@@ -132,22 +132,24 @@ class Router
         $uri            = $request->getUri();
         $requested_path = rtrim($uri->getPath(), '/');
 
-        $requested_path = ltrim($requested_path, '/');
+        $requested_path      = ltrim($requested_path, '/');
         $requested_segments  = explode('/', $requested_path);
         $configured_segments = $this->configured_paths[$method];
 
-        $controller_name = $this->traverse($requested_segments, $configured_segments);
+        ["controller_name" => $controller_name, "path_keys" => $path_keys] = $this->traverse($requested_segments,
+            $configured_segments);
 
-        $path_result = new PathResult([]);
+        $path_result = new PathResult($path_keys);
         $result      = new RouterResult($controller_name, $path_result);
 
 
         return $result;
     }
 
-    private function traverse(array $requested_segments, array $configured_segments): ?string
+    private function traverse(array $requested_segments, array $configured_segments): array
     {
-        static $index = 0;
+        static $index        = 0;
+        static $path_keys = [];
 
         $requested_segment = $requested_segments[$index++];
 
@@ -162,19 +164,31 @@ class Router
             foreach ($keys as $key) {
                 // Note: URLs are case sensitive https://www.w3.org/TR/WD-html40-970708/htmlweb.html
                 if (preg_match("~^{$key}$~", $requested_segment, $matches) === 1) {
-                    $current = &$configured_segments[$key];
+                    next($matches);
+                    $named_key                = key($matches) ?: $key;
+                    $path_keys[$named_key] = $requested_segment;
+                    $current                  = &$configured_segments[$key];
                     break;
                 }
             }
+
             if (empty($matches)) {
                 // Could not find any dynamic routes
-                return null;
+                $result = [
+                    'controller_name' => '',
+                    'path_keys' => [],
+                ];
+                return $result;
             }
         }
 
         if (is_string($current)) {
             // Current is a handler and not a path segment (array)
-            return $current;
+            $result = [
+                'controller_name' => $current,
+                'path_keys' => $path_keys,
+            ];
+            return $result;
         }
 
         return $this->traverse($requested_segments, $current);

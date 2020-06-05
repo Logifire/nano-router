@@ -172,8 +172,8 @@ function configure(string $path, string $handler, array &$configured_paths): voi
 //configure($path, 'Controller 10', $segments);
 $server_request = null;
 $router = new Router();
-$router->configurePath(Router::METHOD_GET, $path, 'Controller 10');
-$router->configurePath(Router::METHOD_GET, '/user/[a-z]+', 'Controller 2');
+$router->configurePath(Router::METHOD_GET, '/user/hello', 'Controller 10');
+$router->configurePath(Router::METHOD_GET, '/user/(?<user>[a-z]+)', 'Controller 2');
 $server_request = new ServerRequest('GET', "/user/boan");
 $result = $router->processRequest($server_request);
 var_dump($result);
