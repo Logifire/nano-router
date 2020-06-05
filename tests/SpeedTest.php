@@ -145,7 +145,7 @@ $segments = [
 ];
 
 $path = 'user/hello';
-
+/*
 function configure(string $path, string $handler, array &$configured_paths): void
 {
     ltrim($path, '/');
@@ -166,11 +166,16 @@ function configure(string $path, string $handler, array &$configured_paths): voi
 
     $current = $handler;
 }
+ *
+ */
 
 //configure($path, 'Controller 10', $segments);
+$server_request = null;
 $router = new Router();
 $router->configurePath(Router::METHOD_GET, $path, 'Controller 10');
-
+$server_request = new ServerRequest('GET', "{$path}");
+$router->processRequest($server_request);
+/*
 function resolve(array $requested_segments, array $configured_segments): ?string
 {
     static $index = 0;
@@ -205,6 +210,7 @@ function resolve(array $requested_segments, array $configured_segments): ?string
 
     return resolve($requested_segments, $current);
 }
-var_dump(resolve(explode('/', $path), $segments));
+ */
+//var_dump(resolve(explode('/', $path), $segments));
 
 echo 'Blag';

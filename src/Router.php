@@ -10,6 +10,9 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class Router
 {
+    /**
+     * Used by implementors
+     */
     public const METHOD_GET     = 'GET';
     public const METHOD_POST    = 'POST';
     public const MEHOD_PUT      = 'PUT';
@@ -24,6 +27,30 @@ class Router
     private $static_routes;
     private $dynamic_routes;
 
+    /**
+     * E.g.
+     * [
+     *  'GET' => [
+     *      'user' => [
+     *          'terms' => 'Controller 1',
+     *          '(?<uuid>[0-9a-f\-]{36})' => 'Controller 2',
+     *      ]
+     *  ]
+     * ]
+     */
+    private $configured_paths = [
+        'GET' => [],
+        'POST' => [],
+        'PUT' => [],
+        'DELETE' => [],
+        'PATCH' => [],
+        'OPTIONS' => [],
+        'HEAD' => [],
+    ];
+
+    /**
+     * Used by validators
+     */
     private const METHODS = [
         'GET',
         'POST',
@@ -49,21 +76,28 @@ class Router
             throw new RouterException("Method not supported: {$method}");
         }
 
-        if (isset($this->static_routes[$method][$path])) {
-            throw new RouterException("Path \"{$path}\" ({$method}) is already configured.");
-        }
-
         if (preg_match("~{$path}~", '') === false) {
             throw new RouterException("Invalid path: {$path}");
         }
 
-        $is_dynamic_path = preg_match('~/\([^/]+\)~', $path) === 1;
+        ltrim($path, '/');
+        $segments = explode('/', $path);
+        $current  = &$this->configured_paths[$method];
 
-        if ($is_dynamic_path) {
-            $this->dynamic_routes[$method][$path] = $controller;
-        } else {
-            $this->static_routes[$method][$path] = $controller;
+        foreach ($segments as $segment) {
+            if (isset($current[$segment])) {
+                $current = &$current[$segment];
+                continue;
+            } else {
+                $current[$segment] = [];
+                // Sort dynamic segmants to be first
+                ksort($current);
+
+                $current = &$current[$segment];
+            }
         }
+
+        $current = $controller;
     }
 
     public function processRequest(ServerRequestInterface $request): ?RouterResult
@@ -77,27 +111,53 @@ class Router
         $method         = strtoupper($request->getMethod());
         $uri            = $request->getUri();
         $requested_path = rtrim($uri->getPath(), '/');
-        $matches        = [];
 
-        if (isset($this->static_routes[$method][$requested_path])) {
-            // Static routes
-            $controller_name = $this->static_routes[$method][$requested_path];
-            $path_result     = new PathResult($matches);
-            $query_result    = new QueryResult($uri->getQuery());
-            $result          = new RouterResult($controller_name, $path_result, $query_result);
+        ltrim($requested_path, '/');
+        $requested_segments  = explode('/', $requested_path);
+        $configured_segments = $this->configured_paths[$method];
+
+        $controller_name = $this->traverse($requested_segments, $configured_segments);
+
+        $path_result     = new PathResult([]);
+        $query_result    = new QueryResult($uri->getQuery());
+        $result          = new RouterResult($controller_name, $path_result, $query_result);
+
+
+        return $result;
+    }
+
+    private function traverse(array $requested_segments, array $configured_segments): ?string
+    {
+        static $index = 0;
+
+        $requested_segment = $requested_segments[$index++];
+
+        if (isset($configured_segments[$requested_segment])) {
+            // Static route exists
+            $current = &$configured_segments[$requested_segment];
         } else {
-            // Dynamic routes
-            $registered_paths = $this->dynamic_routes[$method] ?? [];
-            foreach ($registered_paths as $path_pattern => $controller_name) {
-                if (preg_match("~^{$path_pattern}$~u", $requested_path, $matches) === 1) {
-                    $path_result  = new PathResult($matches);
-                    $query_result = new QueryResult($uri->getQuery());
-                    $result       = new RouterResult($controller_name, $path_result, $query_result);
+            // Check for dynamic routes
+            $matches = [];
+            $keys    = array_keys($configured_segments);
+
+            foreach ($keys as $key) {
+                // Note: URLs are case sensitive https://www.w3.org/TR/WD-html40-970708/htmlweb.html
+                if (preg_match("~^{$key}$~", $requested_segment, $matches) === 1) {
+                    $current = &$configured_segments[$key];
                     break;
                 }
             }
+            if (empty($matches)) {
+                // Could not find any dynamic routes
+                return null;
+            }
         }
 
-        return $result;
+        if (is_string($current)) {
+            // Current is a handler and not a path segment (array)
+            return $current;
+        }
+
+        return $this->traverse($requested_segments, $current);
     }
 }
