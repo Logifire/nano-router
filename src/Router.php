@@ -127,17 +127,17 @@ class Router
      * @param string $requested_path e.g. /user/1234
      * @return RouterResult|null
      */
-    public function lookUp(string $method, string $requested_path): RouterResult
+    public function lookUp(string $method, string $requested_path): array
     {
         $result              = null;
-        $method              = strtoupper($method);
-        $requested_path      = ltrim($requested_path, '/');
-        $requested_path      = rtrim($requested_path, '/');
+//        $method              = strtoupper($method);
+        $requested_path      = trim($requested_path, '/');
         $requested_segments  = explode('/', $requested_path);
         $configured_segments = $this->configured_paths[$method];
 
+        return $this->traverse($requested_segments, $configured_segments, count($requested_segments));
         ["controller_name" => $controller_name, "path_keys" => $path_keys] = $this->traverse($requested_segments,
-            $configured_segments);
+            $configured_segments, count($requested_segments));
 
         $path_result = new PathResult($path_keys);
         $result      = new RouterResult($controller_name, $path_result);
@@ -145,37 +145,35 @@ class Router
         return $result;
     }
 
-    private function traverse(array $requested_segments, array $configured_segments): array
+    private function traverse(array $requested_segments, array $configured_segments, int $requested_segments_count,
+                              int $index = 0, array $dynamic_segment_keys = []): array
     {
-        static $index          = 0;
-        static $path_keys      = [];
-        static $count_segments = 0;
-        $count_segments        = $count_segments ?: count($requested_segments);
-
         $requested_segment = $requested_segments[$index++];
 
         if (isset($configured_segments[$requested_segment])) {
             // Static route exists
-            if ($index === $count_segments) {
+            if ($index === $requested_segments_count) {
+                // Last segment
                 $current = &$configured_segments[$requested_segment];
             } else {
                 $current = &$configured_segments[$requested_segment]['children'];
             }
         } else {
             // Check for dynamic routes
-            $matches = [];
-            $keys    = array_keys($configured_segments); // Represent the children array from last iteration
+            $matches    = [];
+            $regex_keys = array_keys($configured_segments); // Represent the children array from last iteration
 
-            foreach ($keys as $key) {
+            foreach ($regex_keys as $regex_key) {
                 // Note: URLs are case sensitive https://www.w3.org/TR/WD-html40-970708/htmlweb.html
-                if (preg_match("~^{$key}$~", $requested_segment, $matches) === 1) {
+                if (preg_match("~^{$regex_key}$~", $requested_segment, $matches) === 1) {
                     next($matches);
-                    $named_key             = key($matches) ?: $key;
-                    $path_keys[$named_key] = $requested_segment;
-                    if ($index === $count_segments) {
-                        $current = &$configured_segments[$key];
+                    $named_key                        = key($matches) ?: $regex_key;
+                    $dynamic_segment_keys[$named_key] = $requested_segment;
+                    if ($index === $requested_segments_count) {
+                        // Last segment
+                        $current = &$configured_segments[$regex_key];
                     } else {
-                        $current = &$configured_segments[$key]['children'];
+                        $current = &$configured_segments[$regex_key]['children'];
                     }
                     break;
                 }
@@ -183,31 +181,23 @@ class Router
 
             if (empty($matches)) {
                 // Could not find any dynamic routes
-                $result         = [
+                $result = [
                     'controller_name' => '',
                     'path_keys' => [],
                 ];
-                // Reset (static values)
-                $index          = 0;
-                $path_keys      = [];
-                $count_segments = 0;
                 return $result;
             }
         }
 
         if (isset($current['controller']) && $index === $count_segments) {
             // Current is a handler and not a path segment (array)
-            $result         = [
+            $result = [
                 'controller_name' => $current['controller'],
-                'path_keys' => $path_keys,
+                'path_keys' => $dynamic_segment_keys,
             ];
-            // Reset (static values)
-            $index          = 0;
-            $path_keys      = [];
-            $count_segments = 0;
             return $result;
         }
 
-        return $this->traverse($requested_segments, $current);
+        return $this->traverse($requested_segments, $current, $requested_segments_count, $index, $dynamic_segment_keys);
     }
 }
