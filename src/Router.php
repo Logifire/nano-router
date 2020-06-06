@@ -22,30 +22,42 @@ class Router
     public const METHOD_HEAD    = 'HEAD';
 
     /**
-     * @var string[][] E.g.: ['/' => ['GET' => ShowIndex::class]]
-     */
-    private $static_routes;
-    private $dynamic_routes;
-
-    /**
      * E.g.
      * [
      *  'GET' => [
-     *      'user' => [
-     *          'terms' => 'Controller 1',
-     *          '(?<uuid>[0-9a-f\-]{36})' => 'Controller 2',
-     *      ]
+     *      'controller' => 'Controller 0',
+     *      'statics' => [
+     *            'user' => [
+     *                'controller' => 'Controller 1',
+     *                'statics' => [
+     *                    'sign-up' => [
+     *                        'controller' => 'Controller 2',
+     *                        'statics' => [],
+     *                        'dynamics' => [],
+     *                    ],
+     *                ],
+     *                'dynamics' => [
+     *                                '(?<uuid>[0-9a-f\-]{36})' => [
+     *                                       'controller' => 'Controller 3',
+     *                                       'statics' => [],
+     *                                       'dynamics' => [],
+     *                                    ]
+     *                              ],
+     *            ]
+     *        ]
+     *      ],
+     *      'dynamics' => [],
      *  ]
      * ]
      */
     private $configured_paths = [
-        'GET' => [],
-        'POST' => [],
-        'PUT' => [],
-        'DELETE' => [],
-        'PATCH' => [],
-        'OPTIONS' => [],
-        'HEAD' => [],
+        'GET' => ['controller' => '', 'statics' => [], 'dynamics' => []],
+        'POST' => ['controller' => '', 'statics' => [], 'dynamics' => []],
+        'PUT' => ['controller' => '', 'statics' => [], 'dynamics' => []],
+        'DELETE' => ['controller' => '', 'statics' => [], 'dynamics' => []],
+        'PATCH' => ['controller' => '', 'statics' => [], 'dynamics' => []],
+        'OPTIONS' => ['controller' => '', 'statics' => [], 'dynamics' => []],
+        'HEAD' => ['controller' => '', 'statics' => [], 'dynamics' => []],
     ];
 
     /**
@@ -80,26 +92,29 @@ class Router
             throw new RouterException("Invalid path: {$path}");
         }
 
-        $path       = ltrim($path, '/');
-        $segments   = explode('/', $path);
-        $current    = &$this->configured_paths[$method];
+        $path             = trim($path, '/');
+        $segments         = explode('/', $path);
+        $current          = &$this->configured_paths[$method];
         end($segments);
-        $last_index = key($segments);
+        $total_iterations = key($segments);
 
-        foreach ($segments as $index => $segment) {
-            if (isset($current[$segment])) {
-                $current = &$current[$segment]['children'];
+        foreach ($segments as $iteration => $segment) {
+            $is_dynamic = preg_match('/\[.+?\]/', $segment, $matches) === 1 ? true : false;
+            $type       = $is_dynamic ? 'dynamics' : 'statics';
+
+            if (isset($current[$type][$segment])) {
+                // Existing node
+                $current = &$current[$type][$segment];
                 continue;
             } else {
-                $current[$segment] = ['controller' => '', 'children' => []];
-                // Sort dynamic segmants to be first
-                ksort($current);
+                // Create new leaf
+                $current[$type][$segment] = ['controller' => '', 'statics' => [], 'dynamics' => []];
 
-                if ($last_index === $index) {
-                    $current = &$current[$segment];
+                $current = &$current[$type][$segment];
+
+                if ($total_iterations === $iteration) {
                     break;
                 }
-                $current = &$current[$segment]['children'];
             }
         }
 
@@ -146,34 +161,24 @@ class Router
     }
 
     private function traverse(array $requested_segments, array $configured_segments, int $total_iterations,
-                              int $iteration = 0, array $dynamic_segment_keys = []): array
+                              int $iteration = 0, array $matched_dynamics = []): array
     {
         $requested_segment = $requested_segments[$iteration++];
 
-        if (isset($configured_segments[$requested_segment])) {
+        if (isset($configured_segments['statics'][$requested_segment])) {
             // Static route exists
-            if ($iteration === $total_iterations) {
-                // Last segment
-                $current = &$configured_segments[$requested_segment];
-            } else {
-                $current = &$configured_segments[$requested_segment]['children'];
-            }
+            $current = &$configured_segments['statics'][$requested_segment];
         } else {
             // Check for dynamic routes
-            $regex_keys = array_keys($configured_segments); // Represent the children array from last iteration
+            $regex_patterns = array_keys($configured_segments['dynamics']);
 
-            foreach ($regex_keys as $regex_key) {
+            foreach ($regex_patterns as $regex_pattern) {
                 // Note: URLs are case sensitive https://www.w3.org/TR/WD-html40-970708/htmlweb.html
-                if (preg_match("~^{$regex_key}$~", $requested_segment, $matches) === 1) {
+                if (preg_match("~^{$regex_pattern}$~", $requested_segment, $matches) === 1) {
                     next($matches);
-                    $named_key                        = key($matches) ?: $regex_key;
-                    $dynamic_segment_keys[$named_key] = $requested_segment;
-                    if ($iteration === $total_iterations) {
-                        // Last segment
-                        $current = &$configured_segments[$regex_key];
-                    } else {
-                        $current = &$configured_segments[$regex_key]['children'];
-                    }
+                    $group_name                    = key($matches) ?: $regex_pattern; // Is it a named group
+                    $matched_dynamics[$group_name] = $requested_segment;
+                    $current                       = &$configured_segments['dynamics'][$regex_pattern];
                     break;
                 }
             }
@@ -192,11 +197,11 @@ class Router
             // Current is a handler and not a path segment (array)
             $result = [
                 'controller_name' => $current['controller'],
-                'path_keys' => $dynamic_segment_keys,
+                'path_keys' => $matched_dynamics,
             ];
             return $result;
         }
 
-        return $this->traverse($requested_segments, $current, $total_iterations, $iteration, $dynamic_segment_keys);
+        return $this->traverse($requested_segments, $current, $total_iterations, $iteration, $matched_dynamics);
     }
 }

@@ -130,15 +130,16 @@ class SpeedTest
         echo 'TreeRoute not found time: '.$treeRouteResultNotFound.PHP_EOL;
     }
 }
-(new SpeedTest())->testSpeed();
+//(new SpeedTest())->testSpeed();
 
-//$server_request = null;
-//$router = new Router();
-//$router->configurePath(Router::METHOD_GET, '/user/hello', 'Controller 10');
-//$router->configurePath(Router::METHOD_GET, "/user/hello/world", 'Controller 11');
-//$router->configurePath(Router::METHOD_GET, '/user/(?<user>[a-z]+)', 'Controller 2');
+$server_request = null;
+$router = new Router();
+$router->configurePath(Router::METHOD_GET, '/user/(?<user>[a-z]+)', 'Controller 2');
+$router->configurePath(Router::METHOD_GET, '/user/hello', 'Controller 10');
+$router->configurePath(Router::METHOD_GET, "/user/hello/world", 'Controller 11');
 //$server_request = new ServerRequest('GET', "/user/boan");
 //$result = $router->processRequest($server_request);
-//var_dump($result);
+$result = $router->lookUp('GET', '/user/hello/world');
+var_dump($result);
 
 echo 'Blag';
