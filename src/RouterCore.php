@@ -87,7 +87,7 @@ class RouterCore
         $total_iterations = count($segments) - 1;
 
         foreach ($segments as $iteration => $segment) {
-            $is_dynamic = preg_match('~[\[\]\<\>\\\\]~', $segment, $matches) === 1 ? true : false;
+            $is_dynamic = preg_match('~[\[\]\<\>\\\\]~', $segment) === 1 ? true : false;
             $type       = $is_dynamic ? 'dynamics' : 'statics';
 
             if (isset($current[$type][$segment])) {
