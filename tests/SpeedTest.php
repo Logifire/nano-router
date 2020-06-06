@@ -41,10 +41,10 @@ class SpeedTest
 
         $time = 0;
         for ($i = 0; $i < 10000; $i++) {
-            $t1             = microtime(true);
+            $t1   = microtime(true);
             $router->lookUp('GET', $url);
-            $t2             = microtime(true);
-            $time           += ($t2 - $t1);
+            $t2   = microtime(true);
+            $time += ($t2 - $t1);
         }
         return $time;
     }
@@ -88,12 +88,34 @@ class SpeedTest
             }
         }
 
+        $routePatterns = [
+            '/%section%/(?<param1>[a-z]+)' => '/%section%/1',
+            '/%section%/(?<param1>[a-z]+)/(?<param2>[a-z]+)' => '/%section%/1/2',
+            '/%section%/(?<param1>[a-z]+)/(?<param2>[a-z]+)/full' => '/%section%/1/2/full',
+            '/%section%/%subsection%/(?<param1>[0-9]+)' => '/%section%/%subsection%/1',
+            '/%section%/%subsection%/(?<param1>[0-9]+)/(?<param2>[a-z]+)' => '/%section%/%subsection%/1/hello',
+            '/%section%/%subsection%/(?<param1>[0-9]+)/(?<param2>[a-z]+)/full' => '/%section%/%subsection%/1/hello/full'
+        ];
+
+        $routeIndexRegex = [];
+        foreach ($sections as $section) {
+            foreach ($subsections as $subsection) {
+                foreach ($routePatterns as $routePattern => $urlPattern) {
+                    $route                   = str_replace(['%section%', '%subsection%'], [$section, $subsection],
+                        $routePattern);
+                    $url                     = str_replace(['%section%', '%subsection%'], [$section, $subsection],
+                        $urlPattern);
+                    $routeIndexRegex[$route] = $url;
+                }
+            }
+        }
+
 //        var_dump($routeIndex);
 
         $urls = array_values($routeIndex);
 
         $t1        = microtime(true);
-        $fastRoute = $this->createNanoRouter($routeIndex);
+        $fastRoute = $this->createNanoRouter($routeIndexRegex);
         $t2        = microtime(true);
 
         $t3        = microtime(true);
@@ -130,16 +152,16 @@ class SpeedTest
         echo 'TreeRoute not found time: '.$treeRouteResultNotFound.PHP_EOL;
     }
 }
-//(new SpeedTest())->testSpeed();
+(new SpeedTest())->testSpeed();
 
-$server_request = null;
-$router = new Router();
-$router->configurePath(Router::METHOD_GET, '/user/hello', 'Controller 10');
-$router->configurePath(Router::METHOD_GET, "/user/hello/world", 'Controller 11');
-$router->configurePath(Router::METHOD_GET, '/user/(?<user>[a-z]+)', 'Controller 2');
-//$server_request = new ServerRequest('GET', "/user/boan");
-//$result = $router->processRequest($server_request);
-$result = $router->lookUp('GET', '/1234/boan');
-var_dump($result);
+//$server_request = null;
+//$router = new Router();
+//$router->configurePath(Router::METHOD_GET, '/user/hello', 'Controller 10');
+//$router->configurePath(Router::METHOD_GET, "/user/hello/world", 'Controller 11');
+//$router->configurePath(Router::METHOD_GET, '/user/(?<user>[a-z]+)', 'Controller 2');
+////$server_request = new ServerRequest('GET', "/user/boan");
+////$result = $router->processRequest($server_request);
+//$result = $router->lookUp('GET', '/1234/boan');
+//var_dump($result);
 
 echo 'Blag';
