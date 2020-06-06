@@ -145,14 +145,14 @@ class Router
         return $result;
     }
 
-    private function traverse(array $requested_segments, array $configured_segments, int $requested_segments_count,
-                              int $index = 0, array $dynamic_segment_keys = []): array
+    private function traverse(array $requested_segments, array $configured_segments, int $total_iterations,
+                              int $iteration = 0, array $dynamic_segment_keys = []): array
     {
-        $requested_segment = $requested_segments[$index++];
+        $requested_segment = $requested_segments[$iteration++];
 
         if (isset($configured_segments[$requested_segment])) {
             // Static route exists
-            if ($index === $requested_segments_count) {
+            if ($iteration === $total_iterations) {
                 // Last segment
                 $current = &$configured_segments[$requested_segment];
             } else {
@@ -160,7 +160,6 @@ class Router
             }
         } else {
             // Check for dynamic routes
-            $matches    = [];
             $regex_keys = array_keys($configured_segments); // Represent the children array from last iteration
 
             foreach ($regex_keys as $regex_key) {
@@ -169,7 +168,7 @@ class Router
                     next($matches);
                     $named_key                        = key($matches) ?: $regex_key;
                     $dynamic_segment_keys[$named_key] = $requested_segment;
-                    if ($index === $requested_segments_count) {
+                    if ($iteration === $total_iterations) {
                         // Last segment
                         $current = &$configured_segments[$regex_key];
                     } else {
@@ -189,7 +188,7 @@ class Router
             }
         }
 
-        if (isset($current['controller']) && $index === $count_segments) {
+        if ($iteration === $total_iterations) {
             // Current is a handler and not a path segment (array)
             $result = [
                 'controller_name' => $current['controller'],
@@ -198,6 +197,6 @@ class Router
             return $result;
         }
 
-        return $this->traverse($requested_segments, $current, $requested_segments_count, $index, $dynamic_segment_keys);
+        return $this->traverse($requested_segments, $current, $total_iterations, $iteration, $dynamic_segment_keys);
     }
 }
