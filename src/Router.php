@@ -145,7 +145,7 @@ class Router
     public function lookUp(string $method, string $requested_path): array
     {
         $result              = null;
-//        $method              = strtoupper($method);
+        $method              = strtoupper($method);
         $requested_path      = trim($requested_path, '/');
         $requested_segments  = explode('/', $requested_path);
         $configured_segments = $this->configured_paths[$method];
@@ -163,7 +163,7 @@ class Router
     private function traverse(array $requested_segments, array $configured_segments, int $total_iterations,
                               int $iteration = 0, array $matched_dynamics = []): array
     {
-        $current = null;
+        $current           = null;
         $requested_segment = $requested_segments[$iteration++];
 
         if (isset($configured_segments['statics'][$requested_segment])) {
@@ -171,15 +171,13 @@ class Router
             $current = &$configured_segments['statics'][$requested_segment];
         } else {
             // Check for dynamic routes
-            $regex_patterns = array_keys($configured_segments['dynamics']);
-
-            foreach ($regex_patterns as $regex_pattern) {
+            foreach ($configured_segments['dynamics'] as $regex_pattern => $segment) {
                 // Note: URLs are case sensitive https://www.w3.org/TR/WD-html40-970708/htmlweb.html
                 if (preg_match("~^{$regex_pattern}$~", $requested_segment, $matches) === 1) {
-                    next($matches);
-                    $group_name                    = key($matches) ?: $regex_pattern; // Is it a named group
+                    $matched_keys                  = array_keys($matches);
+                    $group_name                    = $matched_keys[1] ?? $regex_pattern; // Is it a named group in regex
                     $matched_dynamics[$group_name] = $requested_segment;
-                    $current                       = &$configured_segments['dynamics'][$regex_pattern];
+                    $current                       = &$segment;
                     break;
                 }
             }

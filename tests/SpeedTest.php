@@ -161,7 +161,7 @@ class SpeedTest
 //$router->configurePath(Router::METHOD_GET, '/user/(?<user>[a-z]+)', 'Controller 2');
 ////$server_request = new ServerRequest('GET', "/user/boan");
 ////$result = $router->processRequest($server_request);
-//$result = $router->lookUp('GET', '/1234/boan');
+//$result = $router->lookUp('GET', '/user/hello/world');
 //var_dump($result);
 
 echo 'Blag';
