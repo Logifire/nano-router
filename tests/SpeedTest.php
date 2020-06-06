@@ -133,86 +133,13 @@ class SpeedTest
 }
 //(new SpeedTest())->testSpeed();
 
-$segments = [
-    '[a-z]+' => [
-        '[0-9]+' => 'Controller'
-    ],
-    'user' => [
-        '[a-z]+' => 'Controller 2',
-        'terms' => 'Controller 3',
-        '[0-9]+' => 'Controller 4',
-    ]
-];
-
-$path = 'user/hello';
-/*
-function configure(string $path, string $handler, array &$configured_paths): void
-{
-    ltrim($path, '/');
-    $segments = explode('/', $path);
-
-    $current = &$configured_paths;
-    foreach ($segments as $segment) {
-        if (isset($current[$segment]) && !is_string($current[$segment])) {
-            $current = &$current[$segment];
-            continue;
-        } else {
-            $current[$segment] = '';
-            // Sort dynamic segmants to be first
-            ksort($current);
-            $current = &$current[$segment];
-        }
-    }
-
-    $current = $handler;
-}
- *
- */
-
-//configure($path, 'Controller 10', $segments);
 $server_request = null;
 $router = new Router();
 $router->configurePath(Router::METHOD_GET, '/user/hello', 'Controller 10');
+$router->configurePath(Router::METHOD_GET, "/user/hello/world", 'Controller 11');
 $router->configurePath(Router::METHOD_GET, '/user/(?<user>[a-z]+)', 'Controller 2');
 $server_request = new ServerRequest('GET', "/user/boan");
 $result = $router->processRequest($server_request);
 var_dump($result);
-/*
-function resolve(array $requested_segments, array $configured_segments): ?string
-{
-    static $index = 0;
-
-    $requested_segment = $requested_segments[$index++];
-
-    if (isset($configured_segments[$requested_segment])) {
-        // Static route exists
-        $current = &$configured_segments[$requested_segment];
-    } else {
-        // Check for dynamic routes
-        $matches = [];
-        $keys    = array_keys($configured_segments);
-
-        foreach ($keys as $key) {
-            // Note: URLs are case sensitive https://www.w3.org/TR/WD-html40-970708/htmlweb.html
-            if (preg_match("~^{$key}$~", $requested_segment, $matches) === 1) {
-                $current = &$configured_segments[$key];
-                break;
-            }
-        }
-        if (empty($matches)) {
-            // Could not find any dynamic routes
-            return null;
-        }
-    }
-
-    if (is_string($current)) {
-        // Current is a handler and not a path segment (array)
-        return $current;
-    }
-
-    return resolve($requested_segments, $current);
-}
- */
-//var_dump(resolve(explode('/', $path), $segments));
 
 echo 'Blag';
