@@ -134,12 +134,12 @@ class SpeedTest
 
 $server_request = null;
 $router = new Router();
-$router->configurePath(Router::METHOD_GET, '/user/(?<user>[a-z]+)', 'Controller 2');
 $router->configurePath(Router::METHOD_GET, '/user/hello', 'Controller 10');
 $router->configurePath(Router::METHOD_GET, "/user/hello/world", 'Controller 11');
+$router->configurePath(Router::METHOD_GET, '/user/(?<user>[a-z]+)', 'Controller 2');
 //$server_request = new ServerRequest('GET', "/user/boan");
 //$result = $router->processRequest($server_request);
-$result = $router->lookUp('GET', '/user/hello/world');
+$result = $router->lookUp('GET', '/1234/boan');
 var_dump($result);
 
 echo 'Blag';

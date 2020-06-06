@@ -76,13 +76,13 @@ class Router
     /**
      * @param string $method HTTP method e.g. GET. See self::METHOD_* constants.
      * @param string $path Request path e.g. /profiles/(?<uuid>[0-9a-f\-]{36})
-     * @param string $controller The fully qualified class name
+     * @param string $controller_name The fully qualified class name
      *
      * @return void
      *
      * @throws RouterException If path is already configured, or unsupported method
      */
-    public function configurePath(string $method, string $path, string $controller): void
+    public function configurePath(string $method, string $path, string $controller_name): void
     {
         if (!in_array($method, self::METHODS)) {
             throw new RouterException("Method not supported: {$method}");
@@ -118,7 +118,7 @@ class Router
             }
         }
 
-        $current['controller'] = $controller;
+        $current['controller'] = $controller_name;
     }
 
     /**
@@ -151,7 +151,7 @@ class Router
         $configured_segments = $this->configured_paths[$method];
 
         return $this->traverse($requested_segments, $configured_segments, count($requested_segments));
-        ["controller_name" => $controller_name, "path_keys" => $path_keys] = $this->traverse($requested_segments,
+        ["controller" => $controller_name, "group_name" => $path_keys] = $this->traverse($requested_segments,
             $configured_segments, count($requested_segments));
 
         $path_result = new PathResult($path_keys);
@@ -163,6 +163,7 @@ class Router
     private function traverse(array $requested_segments, array $configured_segments, int $total_iterations,
                               int $iteration = 0, array $matched_dynamics = []): array
     {
+        $current = null;
         $requested_segment = $requested_segments[$iteration++];
 
         if (isset($configured_segments['statics'][$requested_segment])) {
@@ -182,22 +183,13 @@ class Router
                     break;
                 }
             }
-
-            if (empty($matches)) {
-                // Could not find any dynamic routes
-                $result = [
-                    'controller_name' => '',
-                    'path_keys' => [],
-                ];
-                return $result;
-            }
         }
 
-        if ($iteration === $total_iterations) {
-            // Current is a handler and not a path segment (array)
+        if ($iteration === $total_iterations || $current === null) {
+            // Last iteration or no matches
             $result = [
-                'controller_name' => $current['controller'],
-                'path_keys' => $matched_dynamics,
+                'controller_name' => $current['controller'] ?? '',
+                'group_name' => $matched_dynamics,
             ];
             return $result;
         }
