@@ -3,9 +3,9 @@ namespace NanoRouter\Tests;
 
 use NanoContainer\ContainerFactory;
 use NanoRouter\Controller;
-use NanoRouter\PathResult;
-use NanoRouter\QueryResult;
-use NanoRouter\RouterResult;
+use NanoRouter\Result\PathResult;
+use NanoRouter\Result\QueryResult;
+use NanoRouter\Result\RouterResult;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;

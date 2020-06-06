@@ -1,22 +1,16 @@
 <?php
 
 use NanoRouter\Router;
-use Nyholm\Psr7\ServerRequest;
-use PHPUnit\Framework\TestCase;
+use NanoRouter\RouterCore;
 
 require dirname(__DIR__).'/vendor/autoload.php';
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
-class SpeedTest
+class SpeedBenchmark
 {
 
     private function createNanoRouter($routeIndex)
     {
-        $router = new Router();
+        $router = new RouterCore();
         $i      = 0;
         foreach ($routeIndex as $route => $url) {
             $router->configurePath(Router::METHOD_GET, $route, 'handler'.$i);
@@ -36,20 +30,20 @@ class SpeedTest
         return $router;
     }
 
-    private function testPsr7(Router $router, $routeIndex, $url)
+    private function testPsr7(RouterCore $router, $url)
     {
 
         $time = 0;
         for ($i = 0; $i < 10000; $i++) {
             $t1   = microtime(true);
-            $router->lookUp('GET', $url);
+            $router->lookup('GET', $url);
             $t2   = microtime(true);
             $time += ($t2 - $t1);
         }
         return $time;
     }
 
-    private function test(\TreeRoute\Router $router, $routeIndex, $url)
+    private function test(\TreeRoute\Router $router, $url)
     {
         $time = 0;
         for ($i = 0; $i < 10000; $i++) {
@@ -110,8 +104,6 @@ class SpeedTest
             }
         }
 
-//        var_dump($routeIndex);
-
         $urls = array_values($routeIndex);
 
         $t1        = microtime(true);
@@ -126,18 +118,18 @@ class SpeedTest
 
         echo 'TreeRoute init time: '.($t4 - $t2).PHP_EOL;
 
-        $fastRouteResultFirst = $this->testPsr7($fastRoute, $routeIndex, $urls[0]);
-        $treeRouteResultFirst = $this->test($treeRoute, $routeIndex, $urls[0]);
+        $fastRouteResultFirst = $this->testPsr7($fastRoute, $urls[0]);
+        $treeRouteResultFirst = $this->test($treeRoute, $urls[0]);
 
-        $fastRouteResultMiddle = $this->testPsr7($fastRoute, $routeIndex, $urls[round(sizeof($urls) / 2)]);
-        $treeRouteResultMiddle = $this->test($treeRoute, $routeIndex, $urls[round(sizeof($urls) / 2)]);
+        $fastRouteResultMiddle = $this->testPsr7($fastRoute, $urls[round(sizeof($urls) / 2)]);
+        $treeRouteResultMiddle = $this->test($treeRoute, $urls[round(sizeof($urls) / 2)]);
 
-        $fastRouteResultLast = $this->testPsr7($fastRoute, $routeIndex, $urls[sizeof($urls) - 1]);
-        $treeRouteResultLast = $this->test($treeRoute, $routeIndex, $urls[sizeof($urls) - 1]);
+        $fastRouteResultLast = $this->testPsr7($fastRoute, $urls[sizeof($urls) - 1]);
+        $treeRouteResultLast = $this->test($treeRoute, $urls[sizeof($urls) - 1]);
 
 
-        $fastRouteResultNotFound = $this->testPsr7($fastRoute, $routeIndex, '/not/found/url');
-        $treeRouteResultNotFound = $this->test($treeRoute, $routeIndex, '/not/found/url');
+        $fastRouteResultNotFound = $this->testPsr7($fastRoute, '/not/found/url');
+        $treeRouteResultNotFound = $this->test($treeRoute, '/not/found/url');
 
         echo 'NanoRouter first route time: '.$fastRouteResultFirst.PHP_EOL;
         echo 'TreeRoute first route time: '.$treeRouteResultFirst.PHP_EOL;
@@ -152,16 +144,4 @@ class SpeedTest
         echo 'TreeRoute not found time: '.$treeRouteResultNotFound.PHP_EOL;
     }
 }
-(new SpeedTest())->testSpeed();
-
-//$server_request = null;
-//$router = new Router();
-//$router->configurePath(Router::METHOD_GET, '/user/hello', 'Controller 10');
-//$router->configurePath(Router::METHOD_GET, "/user/hello/world", 'Controller 11');
-//$router->configurePath(Router::METHOD_GET, '/user/(?<user>[a-z]+)', 'Controller 2');
-////$server_request = new ServerRequest('GET', "/user/boan");
-////$result = $router->processRequest($server_request);
-//$result = $router->lookUp('GET', '/user/hello/world');
-//var_dump($result);
-
-echo 'Blag';
+(new SpeedBenchmark())->testSpeed();

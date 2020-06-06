@@ -2,6 +2,7 @@
 namespace NanoRouter\Tests;
 
 use NanoRouter\Router;
+use NanoRouter\RouterCore;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 
@@ -10,7 +11,7 @@ class RouterTest extends TestCase
 
     private function configureRouter(string $controller_name): Router
     {
-        $router = new Router();
+        $router = new Router(new RouterCore());
         $router->configurePath(Router::METHOD_GET, '/profiles/(?<uuid>[0-9a-f\-]{36})', $controller_name);
         $router->configurePath(Router::METHOD_GET, '/profiles/(?<id>\d+)', $controller_name);
         $router->configurePath(Router::METHOD_GET, '/profiles', 'Invalid');

@@ -4,8 +4,9 @@ namespace NanoRouter\Tests;
 use NanoContainer\Container;
 use NanoContainer\ContainerFactory;
 use NanoMiddleware\RequestHandler;
-use NanoRouter\PathResult;
+use NanoRouter\Result\PathResult;
 use NanoRouter\Router;
+use NanoRouter\RouterCore;
 use NanoRouter\RouterMiddleware;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\ServerRequest;
@@ -28,7 +29,7 @@ class MiddlewareTest extends TestCase
         $user_id = 123456;
         $server_request = new ServerRequest('GET', "/user/{$user_id}?foo=bar");
 
-        $router = new Router();
+        $router = new Router(new RouterCore());
         $router->configurePath('GET', '/user/(?<user_id>\d+)', MockController::class);
 
         $response_factory = new Psr17Factory();
