@@ -27,5 +27,8 @@
     "suggest": {
         "logifire/nano-container": "A PSR-11 container implementation, required for the middleware implementation.",
         "logifire/nano-middleware": "A PSR-15 middleware implementation."
+    },
+    "scripts": {
+        "test": "phpunit"
     }
 }
