@@ -1,5 +1,5 @@
 <?php
-namespace NanoRouter;
+namespace NanoRouter\Result;
 
 class RouterResult
 {
@@ -22,7 +22,7 @@ class RouterResult
     /**
      * @param string $controller_name Fully qualified class name
      * @param PathResult $path_result Matched patterns from the path
-     * @param Queryresult $query_result QueryResult 
+     * @param Queryresult $query_result QueryResult
      */
     public function __construct(string $controller_name, PathResult $path_result, QueryResult $query_result)
     {

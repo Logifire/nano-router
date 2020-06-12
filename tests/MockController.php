@@ -2,7 +2,7 @@
 namespace NanoRouter\Tests;
 
 use NanoRouter\Controller;
-use NanoRouter\PathResult;
+use NanoRouter\Result\PathResult;
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

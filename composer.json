@@ -22,7 +22,8 @@
         "phpunit/phpunit": "7.5.1",
         "nyholm/psr7": "1.0.1",
         "logifire/nano-container": "^2.0.0",
-        "logifire/nano-middleware": "^0.1.0"
+        "logifire/nano-middleware": "^0.1.0",
+        "baryshev/tree-route": "^2.0"
     },
     "suggest": {
         "logifire/nano-container": "A PSR-11 container implementation, required for the middleware implementation.",
