@@ -27,7 +27,7 @@ abstract class RequestResult
         return isset($this->matches[$name]) && is_numeric($this->matches[$name]);
     }
 
-    public function getInetger(string $name): int
+    public function getInteger(string $name): int
     {
         if (!$this->hasInteger($name)) {
             throw new ResultException("No integer matches for {$name}");

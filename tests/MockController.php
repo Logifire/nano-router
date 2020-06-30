@@ -35,7 +35,7 @@ class MockController implements Controller
         $body = self::RESPONSE_BODY . " {$requested_path}";
 
         if ($this->path_result->hasInteger('user_id')) {
-            $user_id = $this->path_result->getInetger('user_id');
+            $user_id = $this->path_result->getInteger('user_id');
             $body .= " - User ID: {$user_id}";
         }
 

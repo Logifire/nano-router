@@ -39,7 +39,7 @@ class RouterTest extends TestCase
         $this->assertSame($controller_name, $router_result->getControllerName());
         $path_result   = $router_result->getPathResult();
         $this->assertTrue($path_result->hasInteger('id'));
-        $this->assertSame($id, $path_result->getInetger('id'));
+        $this->assertSame($id, $path_result->getInteger('id'));
     }
 
     public function testFrontpage()
