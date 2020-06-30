@@ -113,7 +113,7 @@ class RouterCore
      *
      * @param string $method e.g. GET
      * @param string $requested_path e.g. /user/1234
-     * @return RouterResult|null
+     * @return array [controller_name => string, group_name => []]
      */
     public function lookup(string $method, string $requested_path): array
     {

@@ -1,5 +1,8 @@
 <?php
+
 namespace NanoRouter\Result;
+
+use NanoRouter\Exception\ResultException;
 
 abstract class RequestResult
 {
@@ -7,7 +10,7 @@ abstract class RequestResult
     /**
      * @var array Matched URL parameters
      */
-    protected $matches;
+    protected $matches = [];
 
     public function hasString(string $name): bool
     {

@@ -1,6 +1,8 @@
 <?php
 namespace NanoRouter\Result;
 
+use NanoRouter\Exception\ResultException;
+
 class QueryResult extends RequestResult
 {
 
