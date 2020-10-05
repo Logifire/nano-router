@@ -1,15 +1,11 @@
 <?php
-
 namespace NanoRouter;
 
 use NanoRouter\Exception\RouterException;
-use NanoRouter\Result\PathResult;
-use NanoRouter\Result\QueryResult;
-use NanoRouter\Result\RouterResult;
-use Psr\Http\Message\ServerRequestInterface;
 
 class RouterCore
 {
+
     /**
      * E.g.
      * [
@@ -81,14 +77,14 @@ class RouterCore
             throw new RouterException("Invalid path: {$path}");
         }
 
-        $path             = trim($path, '/');
-        $segments         = explode('/', $path);
-        $current          = &$this->configured_paths[$method];
+        $path = trim($path, '/');
+        $segments = explode('/', $path);
+        $current = &$this->configured_paths[$method];
         $total_iterations = count($segments) - 1;
 
         foreach ($segments as $iteration => $segment) {
             $is_dynamic = preg_match('~[\[\]\<\>\\\\]~', $segment) === 1 ? true : false;
-            $type       = $is_dynamic ? 'dynamics' : 'statics';
+            $type = $is_dynamic ? 'dynamics' : 'statics';
 
             if (isset($current[$type][$segment])) {
                 // Existing node
@@ -117,19 +113,18 @@ class RouterCore
      */
     public function lookup(string $method, string $requested_path): array
     {
-        $result              = null;
-        $method              = strtoupper($method);
-        $requested_path      = trim($requested_path, '/');
-        $requested_segments  = explode('/', $requested_path);
+        $method = strtoupper($method);
+        $requested_path = trim($requested_path, '/');
+        $requested_segments = explode('/', $requested_path);
         $configured_segments = $this->configured_paths[$method];
 
         return $this->traverse($requested_segments, $configured_segments, count($requested_segments));
     }
 
     private function traverse(array $requested_segments, array $configured_segments, int $total_iterations,
-                              int $iteration = 0, array $matched_dynamics = []): array
+        int $iteration = 0, array $matched_dynamics = []): array
     {
-        $current           = null;
+        $current = null;
         $requested_segment = $requested_segments[$iteration++];
 
         if (isset($configured_segments['statics'][$requested_segment])) {
@@ -140,10 +135,10 @@ class RouterCore
             foreach ($configured_segments['dynamics'] as $regex_pattern => $segment) {
                 // Note: URLs are case sensitive https://www.w3.org/TR/WD-html40-970708/htmlweb.html
                 if (preg_match("~^{$regex_pattern}$~", $requested_segment, $matches) === 1) {
-                    $matched_keys                  = array_keys($matches);
-                    $group_name                    = $matched_keys[1] ?? $regex_pattern; // Is it a named group in regex
+                    $matched_keys = array_keys($matches);
+                    $group_name = $matched_keys[1] ?? $regex_pattern; // Is it a named group in regex
                     $matched_dynamics[$group_name] = $requested_segment;
-                    $current                       = &$segment;
+                    $current = &$segment;
                     break;
                 }
             }
