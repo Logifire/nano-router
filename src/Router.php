@@ -1,4 +1,5 @@
 <?php
+
 namespace NanoRouter;
 
 use NanoRouter\Exception\RouterException;
@@ -11,9 +12,9 @@ class Router
 {
 
     /**
-     * @var RouterCore
+     * @var RouterKernel
      */
-    private $router_core;
+    private $router_kernel;
 
     public const METHOD_GET = 'GET';
     public const METHOD_POST = 'POST';
@@ -23,9 +24,14 @@ class Router
     public const METHOD_OPTIONS = 'OPTIONS';
     public const METHOD_HEAD = 'HEAD';
 
-    public function __construct(RouterCore $router_core)
+    private function __construct(RouterKernel $router_kernel)
     {
-        $this->router_core = $router_core;
+        $this->router_kernel = $router_kernel;
+    }
+
+    public static function create(): self
+    {
+        return new self(new RouterKernel());
     }
 
     /**
@@ -37,9 +43,10 @@ class Router
      * 
      * @throws RouterException If path is already configured, or unsupported method
      */
-    public function configurePath(string $method, string $path, string $controller_name): void
+    public function configurePath(string $method, string $path,
+        string $controller_name): void
     {
-        $this->router_core->configurePath($method, $path, $controller_name);
+        $this->router_kernel->configurePath($method, $path, $controller_name);
     }
 
     /**
@@ -54,14 +61,15 @@ class Router
         $requested_path = $uri->getPath();
         $query = $uri->getQuery();
 
-        $lookup_result = $this->router_core->lookup($method, $requested_path);
+        $lookup_result = $this->router_kernel->lookup($method, $requested_path);
 
         ["controller_name" => $controller_name, "group_name" => $path_keys] = $lookup_result;
 
         if ($controller_name) {
             $path_result = new PathResult($path_keys);
             $query_result = new QueryResult($query);
-            $router_result = new RouterResult($controller_name, $path_result, $query_result);
+            $router_result = new RouterResult($controller_name, $path_result,
+                $query_result);
         }
         return $router_result;
     }

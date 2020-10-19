@@ -1,9 +1,10 @@
 <?php
+
 namespace NanoRouter;
 
 use NanoRouter\Exception\RouterException;
 
-class RouterCore
+class RouterKernel
 {
 
     /**
@@ -67,7 +68,8 @@ class RouterCore
      *
      * @throws RouterException If path is already configured, or unsupported method
      */
-    public function configurePath(string $method, string $path, string $controller_name): void
+    public function configurePath(string $method, string $path,
+        string $controller_name): void
     {
         if (!in_array($method, self::METHODS)) {
             throw new RouterException("Method not supported: {$method}");
@@ -118,11 +120,13 @@ class RouterCore
         $requested_segments = explode('/', $requested_path);
         $configured_segments = $this->configured_paths[$method];
 
-        return $this->traverse($requested_segments, $configured_segments, count($requested_segments));
+        return $this->traverse($requested_segments, $configured_segments,
+                count($requested_segments));
     }
 
-    private function traverse(array $requested_segments, array $configured_segments, int $total_iterations,
-        int $iteration = 0, array $matched_dynamics = []): array
+    private function traverse(array $requested_segments,
+        array $configured_segments, int $total_iterations, int $iteration = 0,
+        array $matched_dynamics = []): array
     {
         $current = null;
         $requested_segment = $requested_segments[$iteration++];
@@ -134,7 +138,8 @@ class RouterCore
             // Check for dynamic routes
             foreach ($configured_segments['dynamics'] as $regex_pattern => $segment) {
                 // Note: URLs are case sensitive https://www.w3.org/TR/WD-html40-970708/htmlweb.html
-                if (preg_match("~^{$regex_pattern}$~", $requested_segment, $matches) === 1) {
+                if (preg_match("~^{$regex_pattern}$~", $requested_segment,
+                        $matches) === 1) {
                     $matched_keys = array_keys($matches);
                     $group_name = $matched_keys[1] ?? $regex_pattern; // Is it a named group in regex
                     $matched_dynamics[$group_name] = $requested_segment;
@@ -153,6 +158,7 @@ class RouterCore
             return $result;
         }
 
-        return $this->traverse($requested_segments, $current, $total_iterations, $iteration, $matched_dynamics);
+        return $this->traverse($requested_segments, $current, $total_iterations,
+                $iteration, $matched_dynamics);
     }
 }

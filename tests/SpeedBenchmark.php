@@ -1,7 +1,7 @@
 <?php
 
 use NanoRouter\Router;
-use NanoRouter\RouterCore;
+use NanoRouter\RouterKernel;
 
 require dirname(__DIR__).'/vendor/autoload.php';
 
@@ -10,7 +10,7 @@ class SpeedBenchmark
 
     private function createNanoRouter($routeIndex)
     {
-        $router = new RouterCore();
+        $router = new RouterKernel();
         $i      = 0;
         foreach ($routeIndex as $route => $url) {
             $router->configurePath(Router::METHOD_GET, $route, 'handler'.$i);
@@ -30,7 +30,7 @@ class SpeedBenchmark
         return $router;
     }
 
-    private function testPsr7(RouterCore $router, $url)
+    private function testPsr7(RouterKernel $router, $url)
     {
 
         $time = 0;
