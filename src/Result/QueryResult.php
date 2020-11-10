@@ -1,4 +1,5 @@
 <?php
+
 namespace NanoRouter\Result;
 
 use NanoRouter\Exception\ResultException;

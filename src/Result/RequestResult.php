@@ -8,9 +8,9 @@ abstract class RequestResult
 {
 
     /**
-     * @var array Matched URL parameters
+     * Matched URL parameters
      */
-    protected $matches = [];
+    protected array $matches = [];
 
     public function hasString(string $name): bool
     {

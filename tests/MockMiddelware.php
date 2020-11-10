@@ -1,4 +1,5 @@
 <?php
+
 namespace NanoRouter\Tests;
 
 use NanoContainer\ContainerFactory;
@@ -25,14 +26,17 @@ class MockMiddelware implements MiddlewareInterface
         $this->container_factory = $container_factory;
     }
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    public function process(ServerRequestInterface $request,
+        RequestHandlerInterface $handler): ResponseInterface
     {
         /** @var RouterResult $router_result */
         $router_result = $request->getAttribute(RouterResult::class);
         $controller_name = $router_result->getControllerName();
 
-        $this->container_factory->set(PathResult::class, $router_result->getPathResult());
-        $this->container_factory->set(QueryResult::class, $router_result->getQueryResult());
+        $this->container_factory->set(PathResult::class,
+            $router_result->getPathResult());
+        $this->container_factory->set(QueryResult::class,
+            $router_result->getQueryResult());
         $this->container_factory->set(ServerRequestInterface::class, $request);
 
         $container = $this->container_factory->createContainer();

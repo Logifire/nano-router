@@ -1,4 +1,5 @@
 <?php
+
 namespace NanoRouter;
 
 use NanoRouter\Result\RouterResult;
@@ -10,10 +11,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 class RouterMiddleware implements MiddlewareInterface
 {
 
-    /**
-     * @var Router
-     */
-    private $router;
+    private Router $router;
 
     public function __construct(Router $router)
     {
@@ -21,7 +19,8 @@ class RouterMiddleware implements MiddlewareInterface
         $this->router = $router;
     }
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    public function process(ServerRequestInterface $request,
+        RequestHandlerInterface $handler): ResponseInterface
     {
         $router_result = $this->router->processRequest($request);
         $request = $request->withAttribute(RouterResult::class, $router_result);

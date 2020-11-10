@@ -1,4 +1,5 @@
 <?php
+
 namespace NanoRouter\Tests;
 
 use NanoRouter\Controller;
@@ -22,7 +23,8 @@ class MockController implements Controller
 
     public const RESPONSE_BODY = 'MockControllerResponse';
 
-    public function __construct(ServerRequestInterface $server_request, PathResult $path_result)
+    public function __construct(ServerRequestInterface $server_request,
+        PathResult $path_result)
     {
 
         $this->path_result = $path_result;

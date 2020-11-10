@@ -1,4 +1,5 @@
 <?php
+
 namespace NanoRouter\Tests;
 
 use NanoContainer\Container;
@@ -6,7 +7,6 @@ use NanoContainer\ContainerFactory;
 use NanoMiddleware\RequestHandler;
 use NanoRouter\Result\PathResult;
 use NanoRouter\Router;
-use NanoRouter\RouterKernel;
 use NanoRouter\RouterMiddleware;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\ServerRequest;
@@ -19,7 +19,8 @@ class MiddlewareTest extends TestCase
     public function testResolving()
     {
         $container_factory = new ContainerFactory();
-        $container_factory->register(MockController::class, function(Container $c) {
+        $container_factory->register(MockController::class,
+            function(Container $c) {
             $server_request = $c->get(ServerRequestInterface::class);
             /** @var PathResult $router_result */
             $path_result = $c->get(PathResult::class);
@@ -30,7 +31,8 @@ class MiddlewareTest extends TestCase
         $server_request = new ServerRequest('GET', "/user/{$user_id}?foo=bar");
 
         $router = new Router();
-        $router->configurePath('GET', '/user/(?<user_id>\d+)', MockController::class);
+        $router->configurePath('GET', '/user/(?<user_id>\d+)',
+            MockController::class);
 
         $response_factory = new Psr17Factory();
         $handler = new RequestHandler($response_factory);

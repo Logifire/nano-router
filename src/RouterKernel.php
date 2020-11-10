@@ -36,7 +36,7 @@ class RouterKernel
      *  ]
      * ]
      */
-    private $configured_paths = [
+    private array $configured_paths = [
         'GET' => ['controller' => '', 'statics' => [], 'dynamics' => []],
         'POST' => ['controller' => '', 'statics' => [], 'dynamics' => []],
         'PUT' => ['controller' => '', 'statics' => [], 'dynamics' => []],
