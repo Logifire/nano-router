@@ -3,7 +3,7 @@
     "description": "Router implementation using PSR-7",
     "license": "MIT",
     "require": {
-        "php": "^7.2",
+        "php": "^7.4",
         "psr/http-server-middleware": "^1.0",
         "psr/http-message": "^1.0",
         "psr/container": "^1.0.0"

@@ -12,7 +12,15 @@ class RouterTest extends TestCase
 
     private function configureRouter(string $controller_name): Router
     {
-        $router = Router::create();
+        $router = new Router();
+                    // Rename RouterCore to RouterKernel, make static factory method
+            // TODO: Router https://laravel.com/docs/8.x/routing#redirect-routes
+            //$router->getMethod('/', MockController::class);
+            //$router->postMethod('/', MockController::class);
+            //
+            //$router->redirect('/mock', MockController::class, 301);
+            //
+            //$router->path('/')->getMethod(ShowEditUser::class)->postMethod(SaveUser::class);
         $router->configurePath(Router::METHOD_GET, '/profiles/(?<uuid>[0-9a-f\-]{36})', $controller_name);
         $router->configurePath(Router::METHOD_GET, '/profiles/(?<id>\d+)', $controller_name);
         $router->configurePath(Router::METHOD_GET, '/profiles', 'Invalid');

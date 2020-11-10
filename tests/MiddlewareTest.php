@@ -29,7 +29,7 @@ class MiddlewareTest extends TestCase
         $user_id = 123456;
         $server_request = new ServerRequest('GET', "/user/{$user_id}?foo=bar");
 
-        $router = Router::create();
+        $router = new Router();
         $router->configurePath('GET', '/user/(?<user_id>\d+)', MockController::class);
 
         $response_factory = new Psr17Factory();

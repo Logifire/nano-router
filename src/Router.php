@@ -11,10 +11,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class Router
 {
 
-    /**
-     * @var RouterKernel
-     */
-    private $router_kernel;
+    private RouterKernel $router_kernel;
 
     public const METHOD_GET = 'GET';
     public const METHOD_POST = 'POST';
@@ -24,14 +21,9 @@ class Router
     public const METHOD_OPTIONS = 'OPTIONS';
     public const METHOD_HEAD = 'HEAD';
 
-    private function __construct(RouterKernel $router_kernel)
+    public function __construct()
     {
-        $this->router_kernel = $router_kernel;
-    }
-
-    public static function create(): self
-    {
-        return new self(new RouterKernel());
+        $this->router_kernel = new RouterKernel();
     }
 
     /**
