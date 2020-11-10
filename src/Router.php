@@ -8,6 +8,10 @@ use NanoRouter\Result\QueryResult;
 use NanoRouter\Result\RouterResult;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods Request methods
+ * @link https://developer.mozilla.org/en-US/docs/Glossary/idempotent Idempotent
+ */
 class Router
 {
 
@@ -24,6 +28,65 @@ class Router
     public function __construct()
     {
         $this->router_kernel = new RouterKernel();
+    }
+
+    /**
+     * For read requests. Idempotent.
+     */
+    public function mapGet(string $path, string $controller_name): void
+    {
+        $this->configurePath(self::METHOD_GET, $path, $controller_name);
+    }
+
+    /**
+     * For create request.
+     */
+    public function mapPost(string $path, string $controller_name): void
+    {
+        $this->configurePath(self::METHOD_POST, $path, $controller_name);
+    }
+
+    /**
+     * For update requests. Full payload required. Idempotent.
+     */
+    public function mapPut(string $path, string $controller_name): void
+    {
+        $this->configurePath(self::METHOD_PUT, $path, $controller_name);
+    }
+
+    /**
+     * For update requests. Only changed parameters required.
+     */
+    public function mapPatch(string $path, string $controller_name): void
+    {
+        $this->configurePath(self::METHOD_PATCH, $path, $controller_name);
+    }
+
+    /**
+     * For delete requests. Idempotent.
+     */
+    public function mapDelete(string $path, string $controller_name): void
+    {
+        $this->configurePath(self::METHOD_DELETE, $path, $controller_name);
+    }
+
+    /**
+     * Lists supported request methods for a given URL. Idempotent.
+     * 
+     * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/OPTIONS
+     */
+    public function mapOptions(string $path, string $controller_name): void
+    {
+        $this->configurePath(self::METHOD_OPTIONS, $path, $controller_name);
+    }
+
+    /**
+     * Like a GET request, but without body payload - only header responses.
+     * Idempotent.
+     */
+    public function mapHead(string $path, string $controller_name): void
+    {
+        $this->configurePath(self::METHOD_HEAD, $path, $controller_name);
     }
 
     /**
