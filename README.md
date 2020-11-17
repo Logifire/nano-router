@@ -17,6 +17,11 @@
     ...
     // Router configuration
     $router = new Router();
+
+    $router->mapGet('/profiles/(?<uuid>[0-9a-f\-]{36})', StringController::class);
+    $router->mapGet('/profiles/(?<id>\d+)', IntegerController::class);
+
+    // Alternate configuration
     $router->configurePath(Router::METHOD_GET, '/profiles/(?<uuid>[0-9a-f\-]{36})', StringController::class);
     $router->configurePath(Router::METHOD_GET, '/profiles/(?<id>\d+)', IntegerController::class);
 
