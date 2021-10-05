@@ -40,7 +40,7 @@ class MiddlewareTest extends TestCase
         $response = $handler->handle($server_request);
 
         $body = (string) $response->getBody();
-        $this->assertContains(MockController::RESPONSE_BODY, $body);
-        $this->assertContains("User ID: {$user_id}", $body);
+        $this->assertStringContainsString(MockController::RESPONSE_BODY, $body);
+        $this->assertStringContainsString("User ID: {$user_id}", $body);
     }
 }
