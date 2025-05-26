@@ -51,13 +51,13 @@ class RouterCore
      * Used for input validation
      */
     private const METHODS = [
-        HttpMethod::GET->value,
-        HttpMethod::POST->value,
-        HttpMethod::PUT->value,
-        HttpMethod::DELETE->value,
-        HttpMethod::PATCH->value,
-        HttpMethod::OPTIONS->value,
-        HttpMethod::HEAD->value
+        'GET',
+        'POST',
+        'PUT',
+        'DELETE',
+        'PATCH',
+        'OPTIONS',
+        'HEAD'
     ];
 
     /**
