@@ -1,6 +1,6 @@
 # nano-router
 
-![](https://github.com/logifire/nano-router/workflows/Router%20tests/badge.svg)
+![](https://github.com/logifire/nano-router/workflows/Tests/badge.svg)
 
 ## Usage
 
