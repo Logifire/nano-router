@@ -1,11 +1,11 @@
 <?php
+declare(strict_types=1);
 namespace NanoRouter\Result;
 
 use NanoRouter\Exception\ResultException;
 
 class QueryResult extends RequestResult
 {
-
     public function __construct(string $query)
     {
         parse_str($query, $this->matches);
@@ -21,7 +21,6 @@ class QueryResult extends RequestResult
         if (!$this->hasCollection($name)) {
             throw new ResultException("No collection matches for {$name}");
         }
-
         return $this->matches[$name];
     }
 }

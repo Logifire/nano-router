@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace NanoRouter;
 
 use NanoRouter\Exception\RouterException;
@@ -9,19 +10,15 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class Router
 {
+    private RouterCore $router_core;
 
-    /**
-     * @var RouterCore
-     */
-    private $router_core;
-
-    public const METHOD_GET = 'GET';
-    public const METHOD_POST = 'POST';
-    public const MEHOD_PUT = 'PUT';
-    public const METHOD_DELETE = 'DELETE';
-    public const METHOD_PATCH = 'PATCH';
-    public const METHOD_OPTIONS = 'OPTIONS';
-    public const METHOD_HEAD = 'HEAD';
+    public const string METHOD_GET = 'GET';
+    public const string METHOD_POST = 'POST';
+    public const string METHOD_PUT = 'PUT';
+    public const string METHOD_DELETE = 'DELETE';
+    public const string METHOD_PATCH = 'PATCH';
+    public const string METHOD_OPTIONS = 'OPTIONS';
+    public const string METHOD_HEAD = 'HEAD';
 
     public function __construct(RouterCore $router_core)
     {

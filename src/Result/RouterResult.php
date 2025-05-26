@@ -1,23 +1,12 @@
 <?php
+declare(strict_types=1);
 namespace NanoRouter\Result;
 
 class RouterResult
 {
-
-    /**
-     * @var string Fully qualified class name
-     */
-    private $controller_name;
-
-    /**
-     * @var PathResult
-     */
-    private $path_result;
-
-    /**
-     * @var QueryResult
-     */
-    private $query_result;
+    private string $controller_name;
+    private PathResult $path_result;
+    private QueryResult $query_result;
 
     /**
      * @param string $controller_name Fully qualified class name

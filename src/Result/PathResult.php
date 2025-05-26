@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace NanoRouter\Result;
 
 class PathResult extends RequestResult

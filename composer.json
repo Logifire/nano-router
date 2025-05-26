@@ -3,7 +3,7 @@
     "description": "Router implementation using PSR-7",
     "license": "MIT",
     "require": {
-        "php": "^7.2",
+        "php": ">=8.4",
         "psr/http-server-middleware": "^1.0",
         "psr/http-message": "^1.0",
         "psr/container": "^1.0.0 | ^2.0.1"
@@ -19,10 +19,10 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5",
-        "nyholm/psr7": "1.0.1",
+        "phpunit/phpunit": "^10.0",
+        "nyholm/psr7": "^1.6",
         "logifire/nano-container": "^2.0.3",
-        "logifire/nano-middleware": "^0.2.2",
+        "logifire/nano-middleware": "^0.3.0",
         "baryshev/tree-route": "^2.0"
     },
     "suggest": {

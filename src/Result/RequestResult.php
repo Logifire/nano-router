@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NanoRouter\Result;
 
 use NanoRouter\Exception\ResultException;
 
 abstract class RequestResult
 {
-
     /**
      * @var array Matched URL parameters
      */
-    protected $matches = [];
+    protected array $matches = [];
 
     public function hasString(string $name): bool
     {
@@ -35,7 +36,6 @@ abstract class RequestResult
         if (!$this->hasInteger($name)) {
             throw new ResultException("No integer matches for {$name}");
         }
-
         return (int) $this->matches[$name];
     }
 }

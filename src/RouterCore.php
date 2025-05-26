@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
 namespace NanoRouter;
 
 use NanoRouter\Exception\RouterException;
+use NanoRouter\HttpMethod;
 
 class RouterCore
 {
@@ -35,7 +37,7 @@ class RouterCore
      *  ]
      * ]
      */
-    private $configured_paths = [
+    private array $configured_paths = [
         'GET' => ['controller' => '', 'statics' => [], 'dynamics' => []],
         'POST' => ['controller' => '', 'statics' => [], 'dynamics' => []],
         'PUT' => ['controller' => '', 'statics' => [], 'dynamics' => []],
@@ -49,13 +51,13 @@ class RouterCore
      * Used for input validation
      */
     private const METHODS = [
-        'GET',
-        'POST',
-        'PUT',
-        'DELETE',
-        'PATCH',
-        'OPTIONS',
-        'HEAD'
+        HttpMethod::GET->value,
+        HttpMethod::POST->value,
+        HttpMethod::PUT->value,
+        HttpMethod::DELETE->value,
+        HttpMethod::PATCH->value,
+        HttpMethod::OPTIONS->value,
+        HttpMethod::HEAD->value
     ];
 
     /**
@@ -69,7 +71,7 @@ class RouterCore
      */
     public function configurePath(string $method, string $path, string $controller_name): void
     {
-        if (!in_array($method, self::METHODS)) {
+        if (!in_array($method, self::METHODS, true)) {
             throw new RouterException("Method not supported: {$method}");
         }
 
