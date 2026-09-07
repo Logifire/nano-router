@@ -1,0 +1,11 @@
+name: AI PR Review Trigger
+
+on:
+  pull_request:
+    types: [labeled]
+
+jobs:
+  call-shared-review:
+    uses: logifire/shared-actions/.github/workflows/ai-pr-review.yml@main
+    secrets:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
